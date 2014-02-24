@@ -15,7 +15,7 @@
 \usepackage{amsmath,amsfonts,amsthm}										% Math packages
 \usepackage[pdftex]{graphicx}														% Enable pdflatex
 \usepackage{url}
-
+\usepackage{graphicx}
 
 %%% Custom sectioning (sectsty package)
 \usepackage{sectsty}												% Custom sectioning (see below)
@@ -102,31 +102,35 @@ There are several relevant covariates available:
 
 	\subsection{Proposed Analyses}
 	\begin{itemize}
-		\item Consensus calling raw sequence data.
 		\item Linear regression. Using the estimated effect and its eror as a t-statistic. (GenABEL package in R)
-		\item Score test. (GenABEL package in R)
 		\item SKAT burden test. (SKAT package in R)
-		\item Generalized linear regression fitting all SNPs within a gene as a variance component. (glm in R)
 	\end{itemize}
-	
-	
 
 \section{Results}
 
 	\subsection{Population Structure}
-Sequence data provides too few variants to adequately identify ancestry through PCA (show figure here).
+Sequence data provides too few variants to adequately identify ancestry through PCA .
 
-The Exome chip data \emph{does} provide enough markers to differentiate samples. The spatial axes are well defined (show plot here).
+The Exome chip data \emph{does} provide enough markers to differentiate samples. The spatial axes are well defined.
+
+\begin{figure}
+\centering
+\includegraphics[width=1.0]{plot/exomeChip.PCA.selfReportedAncestry.pdf}
+\end{figure}
+
 
 	\subsection{Single Marker}
 		\subsubsection{GenABEL Linear Regression}
-	No results in sequence data for common variants.
-	One significant results in Exome chip data
+		No results in sequence data for common variants.
+		One significant results in Exome chip data
 		\subsubsection{GenABEL Score Test}
 	\subsection{Gene-based}
 		\subsubsection{SKAT Burden}
 		\subsubsection{SKAT Rare + Common}
 		\subsection{Variance Components}
+
+\section{References}
+
 
 %%% End document
 \end{document}
