@@ -16,6 +16,7 @@
 \usepackage[pdftex]{graphicx}														% Enable pdflatex
 \usepackage{url}
 \usepackage{graphicx}
+\usepackage{hyperref}
 
 %%% Custom sectioning (sectsty package)
 \usepackage{sectsty}												% Custom sectioning (see below)
@@ -61,9 +62,12 @@
 %%% Begin document
 \begin{document}
 \maketitle
+
 \section{Overview}
 
 Report on the analysis of sequence and chip data collected on 253 individuals undergoing chemotherapy with the drug Irinotecan.
+
+\newpage
 
 \section{Data}
 
@@ -76,7 +80,7 @@ We currently have access to two different sets of genotypes for this population:
 		\item Illumina Exome Chip data. Run as an internal QC measure at the UW.
 	\end{enumerate}
 	
-We have the alignment files for the sequence data. These were run with
+We have the alignment files for the sequence data. These were run through the consensus calling pipeline on Amazon.
 
 	\subsection{Phenotypes}
 	
@@ -95,39 +99,62 @@ There are several relevant covariates available:
 	\subsection{Quality Control}
 	Consensus calling in the sequence data. The results look very nice for the metrics that we have available (reference separate report, or put figures here).
 	
-	Exclude rare SNPs in single marker analyses.
-	Exclude SNPs out of HWE.
-	Exclude SNPs with high rates of genotype missingness.
-	Exclude SNPs with low QUAL
-
+	\begin{itemize}
+		\item Exclude rare SNPs in single marker analyses
+		\item Exclude SNPs out of HWE
+		\item Exclude SNPs with high rates of genotype missingness
+		\item Exclude SNPs with low QUAL
+	\end{itemize}
 	\subsection{Proposed Analyses}
 	\begin{itemize}
 		\item Linear regression. Using the estimated effect and its eror as a t-statistic. (GenABEL package in R)
 		\item SKAT burden test. (SKAT package in R)
 	\end{itemize}
+	
+	I'll have to think some more about which SKAT test is appropriate for this data.
+
+\newpage
 
 \section{Results}
 
 	\subsection{Population Structure}
 Sequence data provides too few variants to adequately identify ancestry through PCA .
 
-The Exome chip data \emph{does} provide enough markers to differentiate samples. The spatial axes are well defined.
+The Exome chip data \emph{does} provide enough markers to differentiate samples. The spatial axes are well defined (see \hyperref[exomeAncestry]{Fig 3.1}). These PC's were used to identify a set of genetically homogenous samples (see \hyperref[exomeCluster]{Fig 3.2} and \hyperref[exomeCEUZoom]{Fig 3.3}).
 
-\begin{figure}
+%%% FIGURES
+\begin{figure}[exomeAncestry]
 \centering
-\includegraphics[width=1.0]{plot/exomeChip.PCA.selfReportedAncestry.pdf}
+\includegraphics[scale=1.0]{{{plots/exomeChip.PCA.selfReportedAncestry}}}
+\caption{First two principal components of exome chip genotype data. The samples segregate fairly well into their self-reported ancestries.	}
 \end{figure}
 
+\begin{figure}[exomeCluster]
+\centering
+\includegraphics[scale=1.0]{{{plots/exomeChip.PCA.clustering}}}
+\caption{Model based clustering of the first two pricipal components using the exome chip genotypes. These clusters were used to select a homogenous set of samples. In this case, we subset our data to the 161 samples contained in cluster 1.}
+\end{figure}
+
+\begin{figure}[exomeCEUZoom]
+\centering
+\includegraphics[scale=1.0]{{{plots/exomeChip.PCA.clustering.CEUzoom}}}
+\caption{A zoom of the European cluster in the exome chip PCA. This shows some substructure, and we ultimately subset the samples contained in cluster 1.}
+\end{figure}
 
 	\subsection{Single Marker}
 		\subsubsection{GenABEL Linear Regression}
 		No results in sequence data for common variants.
 		One significant results in Exome chip data
-		\subsubsection{GenABEL Score Test}
 	\subsection{Gene-based}
+		\subsubsection{Notes and Issues}
+		The variants need to be cleaned. Right now, a lot of genes are dropped due to high rates of missingness. Additionally, many genotypes are being imputed through the SKAT package based on HWE.
+		
+		I am not using the small sample correction that the author's suggest for $n<2000$. P-values are computed with a parametric bootstrap with $n=10000$ iterations.
 		\subsubsection{SKAT Burden}
+		Currently running for the model: ANC ~ sex + site + dose. 11 samples are excluded for having missing covariate information.
+		
 		\subsubsection{SKAT Rare + Common}
-		\subsection{Variance Components}
+		Very similar to the Burden. Top genes are the same with different p-values. 11 samples are excluded for having missing covariate information.
 
 \section{References}
 
