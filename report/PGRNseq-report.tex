@@ -65,7 +65,7 @@
 
 \section{Overview}
 
-Report on the analysis of sequence and chip data collected on 253 individuals undergoing chemotherapy with the drug Irinotecan.
+Notes on the on going analysis of genetic data in patients undergoing treament with Irinotecan. The current iteration of the study contains data from samples collected across three different sites. In all, there are currently 253 individuals with targeted sequence and Illumina exome chip data. Samples were collected from patients undergoing a chemotherapeutic regimen with Irinotecan.
 
 \newpage
 
@@ -101,7 +101,7 @@ There are several relevant covariates available:
 	
 	\begin{itemize}
 		\item Exclude rare SNPs in single marker analyses
-		\item Exclude SNPs out of HWE
+		\item Exclude SNPs out of HWE (has not yet been done)
 		\item Exclude SNPs with high rates of genotype missingness
 		\item Exclude SNPs with low QUAL
 	\end{itemize}
@@ -111,7 +111,7 @@ There are several relevant covariates available:
 		\item SKAT burden test. (SKAT package in R)
 	\end{itemize}
 	
-	I'll have to think some more about which SKAT test is appropriate for this data.
+	I'll have to think some more about which SKAT test is appropriate for this data. There is an excellent article by Lee et. al (2012) that proposes the optimal rare variant test SKAT-O. This statistic is a linear combination of
 
 \newpage
 
@@ -143,18 +143,66 @@ The Exome chip data \emph{does} provide enough markers to differentiate samples.
 
 	\subsection{Single Marker}
 		\subsubsection{GenABEL Linear Regression}
-		No results in sequence data for common variants.
-		One significant results in Exome chip data
+		No results in sequence data for common variants. The QQ plot without covariates shows some deflation in the tail (see \hyperref[basicSeqQQ]{Fig 3.4}). Once adjusting with available covarites, the scan looks reasonably null (see \hyperref[fullSeqQQ]{Fig 3.5}). \\
+		
+		One significant marker in Exome chip data. The p-value improves with a full model including covariates. \\
+		
+		\begin{figure}[basicSeqQQ]
+		\centering
+		\includegraphics[scale=1]{{{plots/sequence.gwa.basicmodel.qq}}}
+		\caption{GWA scan for sequence data using the basic model: $ANC = Geno$. SNPs were excluded based on the following criteria: call rate $<0.95$, MAF $<0.05$, and HWE. Individuals were excluded based on missing phenotype and PCA outliers. This result was produced with 160 individuals with 2,140 markers. There is some deflation seen in extremely small p-values.}
+		\end{figure}	
+		
+		\begin{figure}[fullSeqQQ]
+		\centering
+		\includegraphics[scale=1]{{{plots/sequence.gwa.fullmodel.qq}}}
+		\caption{GWA scan for sequence data using the full covariate model: $ANC = Geno + sex + site + dose$. SNPs were excluded based on the following criteria: call rate $<0.95$, MAF $<0.05$, and HWE. Individuals were excluded based on missing phenotype and PCA outliers. This result was produced with 160 individuals with 2,140 markers. The covariate correction reduces the deflation observed at small p-values.}
+		\end{figure}			
+		
+		\begin{figure}[basicExomeQQ]
+		\centering
+		\includegraphics[scale=1]{{{plots/exome.gwa.basicmodel.qq}}}
+		\caption{GWA scan for exome chip data using the basic model: $ANC = Geno$. SNPs were excluded based on the following criteria: call rate $<0.95$, MAF $<0.05$, and HWE. Individuals were excluded based on missing phenotype, missing covariate and PCA outliers. The final dataset consisted of 159 individuals and 26,728 markers.}
+		\end{figure}	
+		
+		\begin{figure}[fullExomeQQ]
+		\centering
+		\includegraphics[scale=1]{{{plots/exome.gwa.fullmodel.qq}}}
+		\caption{GWA scan for exome chip data using the full covariate model: $ANC = Geno + sex + site + dose$. SNPs were excluded based on the following criteria: call rate $<0.95$, MAF $<0.05$, and HWE. Individuals were excluded based on missing phenotype, missing covariate and PCA outliers. The final dataset consisted of 159 individuals and 26,728 markers.}		
+		\end{figure}
+		
 	\subsection{Gene-based}
 		\subsubsection{Notes and Issues}
 		The variants need to be cleaned. Right now, a lot of genes are dropped due to high rates of missingness. Additionally, many genotypes are being imputed through the SKAT package based on HWE.
 		
-		I am not using the small sample correction that the author's suggest for $n<2000$. P-values are computed with a parametric bootstrap with $n=10000$ iterations.
+		I am not using the finite sample correction that the author's suggest for $n<2000$. P-values are computed with a parametric bootstrap with $n=10000$ iterations.
 		\subsubsection{SKAT Burden}
-		Currently running for the model: ANC ~ sex + site + dose. 11 samples are excluded for having missing covariate information.
-		
+		Currently running for the model: $ANC = Geno + sex + site + dose$. Eleven samples are excluded for having missing covariate information. Many sites contain high rates of missingess, and imputation is performed by the SKAT package. \hyperref[SKATburdenQQ]{Fig 3.4} shows the QQ-plot that contains a number of significant associations in the tail. These top hits are summarized in the \hyperref[burdenResults]{Table 3.1}.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{cccccc}
+ENTREZ ID & burden.asymp.p & burden.resample.p & Symbol \\ \hline
+3177 & 8.183411e-08 & 0.0000099999 & SLC29A2 \\ \hline
+6799 & 2.130900e-05 & 0.0000299997 & SULT1A2 \\ \hline
+8824 & 3.287893e-04 & 0.0003099969 & CES2 \\ \hline
+6817 & 5.014952e-02 & 0.0498695013 & SULT1A1 \\ \hline
+4881 & 6.311036e-04 & 0.0004699953 & NPR1 \\ \hline
+\end{tabular}
+\caption{Top five results for the burden test. P-values were generated with an theoretical distribution of the test, as well as with $10^{5}$ bootstrap iterations in a resampling procedure. The expensive nature of bootstrap means that the smallest possible observable pvalue is $10^{-5}$.}
+\label{burdenResults}
+\end{center}
+\end{table}
+
+\begin{figure}[SKATburdenQQ]
+\centering
+\includegraphics[scale=1.0]{{{plots/SKAT.burdenQQ}}}
+\caption{QQ plot from a set of 421 gene-based units tested with SKAT's burden test in 150 individuals. P-values were generated with a theoretical distribution (though the top hit is maintained with a resampling based p-value). }
+\end{figure}	
+
 		\subsubsection{SKAT Rare + Common}
-		Very similar to the Burden. Top genes are the same with different p-values. 11 samples are excluded for having missing covariate information.
+		Many of the variants are rare in this dataset. Our top hits are nearly identical to the burden top hits since the common test is being down weighted.
+
 
 \section{References}
 
