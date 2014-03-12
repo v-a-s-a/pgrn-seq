@@ -32,6 +32,8 @@ Xraw <- as(object=XsnpMat$genotypes, Class="numeric")
 ## NOTE: This phenotype file was created for the GenABEL GWAS. It is not raw!
 ##        It has removed some missing data, and standardized some sample names.
 pheno.df <- read.table('annotation/genable.pheno', header=T)
+pheno.df$dose <- as.numeric(pheno.df$dose)
+pheno.df$sex <- as.factor(pheno.df$sex)
 ## subset to european-like individuals
 eur.pheno <- pheno.df[which(pheno.df$cluster == 1),]
 
@@ -90,15 +92,17 @@ res <- foreach(i = 1:length(genes), .combine = rbind) %dopar% {
   Xgene <- sparseX[,gene.snps]
   try({
     burden <- SKAT(Xgene, null.model)
-    rarecommon <- SKAT_CommonRare(Xgene, null.model)
     data.frame(gene=gene,
-               burden.asymp.p = burden$p.value,
-               burden.resample.p = Get_Resampling_Pvalue(burden)$p.value,
-               rarecommon.asymp.p = rarecommon$p.value,
-               rarecommon.resample.p = Get_Resampling_Pvalue(rarecommon)$p.value)
+               burden.asymp.p = burden$p.value)
     })
 }
-res[,2:5] <- lapply(res[,2:5], as.numeric)
+#res[,2] <- lapply(res[,2], as.numeric)
+
+## calculate some permutation based p-values for top hits
+permute.p <- function() {
+
+
+}
 
 ## add gene symbols for interpretation
 Symbol2id <- as.list( org.Hs.egSYMBOL2EG )
