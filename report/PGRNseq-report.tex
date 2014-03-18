@@ -104,15 +104,24 @@ There are several relevant covariates available:
 		\item Exclude SNPs out of HWE (has not yet been done)
 		\item Exclude SNPs with high rates of genotype missingness
 		\item Exclude SNPs with low QUAL
+		\item Check PGRNseq and Exome chip genotype concordance
 	\end{itemize}
+
+	\subsubsection{Genotype Concordance}
+	Checking concordance between PGRNseq and Exome chip genotypes. \\
+	
+	Number of overlapping variant sites: 883
+	Number of non-overlapping variant sites: 7850
+	Genotype concordance: 0.9494
+	
+	This seems low, but the vast majority of sites contain perfectly concordant calls. The average is significantly lowered due to ~30 sites with near-zero concordance. 
+	
 	\subsection{Proposed Analyses}
 	\begin{itemize}
 		\item Linear regression. Using the estimated effect and its eror as a t-statistic. (GenABEL package in R)
 		\item SKAT burden test. (SKAT package in R)
 	\end{itemize}
 	
-	I'll have to think some more about which SKAT test is appropriate for this data. There is an excellent article by Lee et. al (2012) that proposes the optimal rare variant test SKAT-O. This statistic is a linear combination of
-
 \newpage
 
 \section{Results}
@@ -190,9 +199,12 @@ exm1453164 & 1.120e-05 & 19 & 33579109 & GPATCH1 \\ \hline
 		
 	\subsection{Gene-based}
 		\subsubsection{Notes and Issues}
+		I'll have to think some more about which SKAT test is appropriate for this data. There is an excellent article by Lee et. al (2012) that proposes the optimal rare variant test SKAT-O. This statistic is a linear combination of burden and variance component statistics. You can also specify different kernels. The default kernel weights variants based on rareness.
+		
 		The variants need to be cleaned. Right now, a lot of genes are dropped due to high rates of missingness. Additionally, many genotypes are being imputed through the SKAT package based on HWE.
 		
-		I am not using the finite sample correction that the author's suggest for $n<2000$. P-values are computed with a parametric bootstrap with $n=10000$ iterations.
+		I am not using the finite sample correction that the author's suggest for $n<2000$. P-values are computed with a parametric bootstrap with $n=10000$ iterations.		
+		
 		\subsubsection{SKAT Burden}
 		Currently running for the model: $ANC = Geno + sex + site + dose$. Eleven samples are excluded for having missing covariate information. Many sites contain high rates of missingess, and imputation is performed by the SKAT package. \hyperref[SKATburdenQQ]{Fig 3.4} shows the QQ-plot that contains a number of significant associations in the tail. These top hits are summarized in the \hyperref[burdenResults]{Table 3.1}.
 
