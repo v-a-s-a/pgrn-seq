@@ -2,6 +2,9 @@ library(GenABEL)
 library(ggplot2)
 library(mclust)
 library(SNPRelate)
+library(VariantAnnotation)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(org.Hs.eg.db)
 
 ## weird sample ID format for italian samples
 removeACO <- function(x) {
@@ -11,6 +14,7 @@ removeACO <- function(x) {
 removemgm2 <- function(x) {
   return(gsub(' mg\\/m2' ,'', x))
 }
+
 
 ## read in phenotype and covariate data
 pheno <- read.table('annotation/ANC_Nadir_vasyaModified.csv', sep='\t', header=T, stringsAsFactors=F)
@@ -75,9 +79,9 @@ consensus <- load.gwaa.data(phenofile = genabel.pheno, genofile = genabel.geno)
 exome <- load.gwaa.data(phenofile = genabel.pheno, genofile = exome.geno)
 ## subset markers by: minor allele frequency and callrate
 ## subset samples by: PCA cluster (i.e. genetic ethnicity)
-seq.snpsubset <- check.marker(data = consensus, maf = 0.05, callrate = 0.95, idsubset = as.character(pheno.df$id[which(pheno.df$cluster==1 & pheno.df$ANC>1)]))
+seq.snpsubset <- check.marker(data = consensus, maf = 0.05, callrate = 0.95, idsubset = as.character(pheno.df$id[which(pheno.df$cluster==1 & pheno.df$ANC > 1 )]))
 seq.geno <- consensus[seq.snpsubset$idok, seq.snpsubset$snpok]
-exome.snpsubset <- check.marker(data = exome, maf = 0.05, callrate = 0.95, idsubset = as.character(pheno.df$id[which(pheno.df$cluster==1 & pheno.df$ANC>1)]))
+exome.snpsubset <- check.marker(data = exome, maf = 0.05, callrate = 0.95, idsubset = as.character(pheno.df$id[which(pheno.df$cluster==1 & pheno.df$ANC > 1 )]))
 exome.geno <- exome[exome.snpsubset$idok, exome.snpsubset$snpok]
 
 ## run a few scans
@@ -86,6 +90,8 @@ full.model <- scale(ANC) ~ sex + site + dose
 #score.results <- qtscore(scale(ANC) ~ sex + site + dose, seq.geno, trait="gaussian")
 seq.reg.results <- mlreg(full.model, seq.geno, trait="gaussian")
 exome.reg.results <- mlreg(full.model, exome.geno, trait="gaussian")
+
+top.exome <- head(exome.reg.results[order(exome.reg.results[,"P1df"]),])
 
 ## summarize
 source('scripts/qqunif.r')
