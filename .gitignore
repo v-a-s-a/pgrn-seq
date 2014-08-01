@@ -1,0 +1,7 @@
+## latex files
+*.aux
+*.toc
+*.out
+## binary R data files
+*.Rdata
+
