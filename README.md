@@ -1,6 +1,6 @@
 # PGRNseq Project
 
-## Repository for all source code and reports for the PGRNseq analysis. Check out the latex document in the report/ directory for lab notebook style summary of current experiments and results.
+## Repository for all source code and reports for the PGRNseq analysis. Check out the latex document in the lab\_notebook/ directory for summary of current experiments and results.
 
 
 ## Topoisomerase 
