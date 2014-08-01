@@ -1,0 +1,254 @@
+Sample ID	Race	Sex	Age	Dosing strategy	Dose (mg)	BSA	Bilirubin		Study site
+1001	Caucasian	M			350 mg/m2	1.76			UC
+1007	Caucasian	M			350 mg/m2	2.10			UC
+1010	Caucasian	M			350 mg/m2	2.02			UC
+1013	Caucasian	M			350 mg/m2	2.14			UC
+1014	Caucasian	M			350 mg/m2	1.94			UC
+1015	Caucasian	M			350 mg/m2	1.60			UC
+1022	Caucasian	F			350 mg/m2	1.85			UC
+1024	Caucasian	F			350 mg/m2	1.60			UC
+1033	Caucasian	M			350 mg/m2	1.99			UC
+1036	Filipino	F			350 mg/m2	1.60			UC
+1040	Caucasian	F			350 mg/m2	1.55			UC
+1046	Caucasian	M			350 mg/m2	2.10			UC
+1062	Caucasian	F			350 mg/m2	1.80			UC
+1076	Caucasian	F			350 mg/m2	1.50			UC
+1084	Caucasian	F			350 mg/m2	1.78			UC
+1085	Caucasian	F			350 mg/m2	2.10			UC
+1087	Caucasian	M			350 mg/m2	2.10			UC
+1089	Caucasian	F			350 mg/m2	1.80			UC
+1091	Caucasian	M			350 mg/m2	1.90			UC
+1107	Caucasian	M			350 mg/m2	2.05			UC
+1111	Black	M			350 mg/m2	1.50			UC
+1113	Black	F			350 mg/m2	1.90			UC
+1114	Caucasian	M			350 mg/m2	2.30			UC
+1115	Black	F			300 mg/m2	1.64			UC
+1116	Caucasian	M			300 mg/m2	1.70			UC
+1127	Caucasian	F			300 mg/m2	1.60			UC
+1131	Caucasian	M			300 mg/m2	1.50			UC
+1139	Caucasian	M			300 mg/m2	2.08			UC
+1142	Caucasian	M			300 mg/m2	2.20			UC
+1144	Caucasian	M			300 mg/m2	2.20			UC
+1145	Caucasian	M			350 mg/m2	2.21			UC
+1146	Caucasian	F			350 mg/m2	1.46			UC
+1149	Black	F			350 mg/m2	2.10			UC
+1157	Caucasian	F			350 mg/m2	1.58			UC
+1162	Caucasian	F			300 mg/m2	1.77			UC
+1164	Caucasian	M			350 mg/m2	1.92			UC
+1168	Black	F			350 mg/m2	1.82			UC
+1169	Black	F			350 mg/m2	1.71			UC
+1177	Black	M			350 mg/m2	1.70			UC
+1188	Caucasian	M			350 mg/m2	1.83			UC
+1198	Caucasian	M			300 mg/m2	2.00			UC
+1201	Asian	M			300 mg/m2	1.67			UC
+1202	Caucasian	M			300 mg/m2	2.04			UC
+1215	Caucasian	F			300 mg/m2	1.79			UC
+1223	Caucasian	M			300 mg/m2	1.96			UC
+1225	Caucasian	M			300 mg/m2	1.98			UC
+1230	Caucasian	F			300 mg/m2	1.82			UC
+1231	Caucasian	F			300 mg/m2	1.60			UC
+1232	Caucasian	F			300 mg/m2	1.87			UC
+1239	Caucasian	F			300 mg/m2	1.50			UC
+1240	Caucasian	F			300 mg/m2	1.76			UC
+1242	Caucasian	F			300 mg/m2	1.46			UC
+1244	Caucasian	M			350 mg/m2	1.71			UC
+1247	Caucasian	M			350 mg/m2	1.90			UC
+1249	Caucasian	M			350 mg/m2	1.97			UC
+1253	Caucasian	M			350 mg/m2	1.95			UC
+1255	Caucasian	M			350 mg/m2	2.55			UC
+1256	Caucasian	M			350 mg/m2	1.85			UC
+1257	Hispanic	F			350 mg/m2	1.74			UC
+1264	Caucasian	M			350 mg/m2	1.81			UC
+1271	Caucasian	M			350 mg/m2	2.09			UC
+1275	Hispanic	F			350 mg/m2	1.41			UC
+1277	Caucasian	M			350 mg/m2	1.80			UC
+1283	Caucasian	M			350 mg/m2	2.10			UC
+1313	Caucasian	F			350 mg/m2	1.74			UC
+1329	White	F							UC
+1330	Caucasian	M			350 mg/m2	2.20			UC
+1333	Caucasian	M			350 mg/m2	1.80			UC
+1342	Caucasian	M			350 mg/m2	2.00			UC
+1350	Black	F			350 mg/m2	1.70			UC
+1351	Caucasian	F			350 mg/m2	1.55			UC
+1357	Caucasian	M			350 mg/m2	2.15			UC
+1358	Hispanic	F			350 mg/m2	2.00			UC
+1367	Asian	M			350 mg/m2	1.50			UC
+1372	Caucasian	F			350 mg/m2	1.75			UC
+1381	Black	M			350 mg/m2	1.80			UC
+1386	Black	F			350 mg/m2	1.80			UC
+1388	Caucasian	F			350 mg/m2	1.60			UC
+1390	Caucasian	M			350 mg/m2	1.98			UC
+1403	Hispanic	M			350 mg/m2	1.90			UC
+1407	Black	F			350 mg/m2	2.20			UC
+1409	Caucasian	M			350 mg/m2	2.03			UC
+1411	White	F							UC
+1426	Black	M							UC
+1427	Black	F							UC
+1437	White	M							UC
+1441	Caucasian	F							UC
+1503	Caucasian	M			850 mg/m2	2.15			UC
+1509	Caucasian	M			850 mg/m2	2.28			UC
+1511	Caucasian	M			850 mg/m2	2.3			UC
+1518	Caucasian	M			850 mg/m2	1.84			UC
+1520	Caucasian	F			700 mg/m2	1.77			UC
+1525	Caucasian	M			850 mg/m2	1.92			UC
+1526	Caucasian	M			1000 mg/m2	2.43			UC
+1527	Caucasian	M			700 mg/m2	1.76			UC
+1535	Caucasian	F			700 mg/m2	1.87			UC
+1542	Caucasian	F			700 mg/m2	1.79			UC
+1565	Caucasian	F			700 mg/m2	2.26			UC
+1581	Caucasian	M			850 mg/m2	2.09			UC
+1584	Caucasian	M			700 mg/m2	2.06			UC
+1585	Hispanic	M			850 mg/m2	1.83			UC
+1590	Hispanic	M			700 mg/m2	1.69			UC
+1593	Caucasian	M			850 mg/m2	1.99			UC
+1594	Caucasian	F			850 mg/m2	1.86			UC
+1596	Caucasian	M			700 mg/m2	2.08			UC
+1597	Caucasian	F			700 mg/m2	1.62			UC
+1600	Caucasian	F			700 mg/m2	1.89			UC
+1443	Black	M			850 mg/m2	1.92			UC
+1452	Caucasian	M			700 mg/m2	2.05			UC
+1456	Caucasian	F			500 mg/m2	1.54			UC
+1457	Caucasian	M			850 mg/m2	1.75			UC
+1460	Caucasian	M			500 mg/m2	1.95			UC
+1462	Black	F			850 mg/m2	1.51			UC
+1464	Caucasian	M			850 mg/m2	2.4			UC
+1467	Caucasian	F			850 mg/m2	1.82			UC
+1468	Caucasian	M			700 mg/m2	1.49			UC
+1469	Black	M			700 mg/m2	2.12			UC
+1470	Caucasian	M			350 mg/m2	2.00			UC
+1473	Caucasian	M			350 mg/m2	2.10			UC
+1474	Caucasian	M			850 mg/m2	1.98			UC
+1479	Caucasian	F			350 mg/m2	1.66			UC
+1481	Caucasian	M			700 mg/m2	1.98			UC
+1495	Caucasian	F			350 mg/m2	1.70			UC
+1529	Caucasian	F			700 mg/m2	1.65			UC
+1540	Black	F			850 mg/m2	1.83			UC
+1547	Caucasian	F			700 mg/m2	1.78			UC
+1552	Black	M			1000 mg/m2	1.72			UC
+1554	Hispanic	F			700 mg/m2	1.6			UC
+1580	Caucasian	M			700 mg/m2	2.04			UC
+MO22605	Caucasian	Male	66	flat 600 mg	600		14		Erasmus
+MO22606	Caucasian	Male	27	flat 600 mg	600		7		Erasmus
+MO22609	Caucasian	Male	49	350 mg/m2	650		12		Erasmus
+MO22610	Caucasian	Female	56	flat 600 mg	600		4		Erasmus
+MO22611	Caucasian	Female	62	350 mg/m2	620		8		Erasmus
+MO22614	Caucasian	Female	48	formula	540		10		Erasmus
+MO22615	Caucasian	Female	57	formula	720		9		Erasmus
+MO22618	Caucasian	Male	66	flat 600 mg	600		11		Erasmus
+MO22619	Caucasian	Female	59	flat 600 mg	600		6		Erasmus
+MO22621	Caucasian	Male	66	flat 600 mg	600		4		Erasmus
+MO22623	Caucasian	Female	62	flat 600 mg	600		7		Erasmus
+MO22624	Caucasian	Male	59	flat 600 mg	600		8		Erasmus
+MO22625	Caucasian	Male	61	flat 600 mg	600		10		Erasmus
+MO22626	Caucasian	Female	74	350 mg/m2	600		5		Erasmus
+MO22628	Caucasian	Female	67	flat 600 mg	600		8		Erasmus
+MO22629	Caucasian	Male	65	flat 600 mg	600		6		Erasmus
+MO22630	Caucasian	Female	50	flat 600 mg	600		8		Erasmus
+MO22631	Caucasian	Male	26	flat 600 mg	600		11		Erasmus
+61006	Caucasian	Male	72	flat 600 mg	600		8		Erasmus
+61007	Caucasian	Male	56	flat 600 mg	600		10		Erasmus
+61008	Caucasian	Female	68	flat 600 mg	600		21		Erasmus
+61011	Caucasian	Female	72	flat 600 mg	600		5		Erasmus
+61012	Caucasian	Female	67	flat 600 mg	600		6		Erasmus
+61015	Caucasian	Male	74	350 mg/m2	750		12		Erasmus
+61016	Caucasian	Male	70	350 mg/m2	630		7		Erasmus
+61017	Caucasian	Male	53	flat 600 mg	600		8		Erasmus
+61019	Caucasian	Male	41	flat 600 mg	600		9		Erasmus
+61020	Caucasian	Male	61	flat 600 mg	600		6		Erasmus
+61021	Caucasian	Female	63	flat 600 mg	600		7		Erasmus
+61023	Caucasian	Male	66	350 mg/m2	650		10		Erasmus
+61024	Caucasian	Female	54	350 mg/m2	580		9		Erasmus
+61025	Caucasian	Female	54	350 mg/m2	620		9		Erasmus
+61028	Caucasian	Female	58	350 mg/m2	580		6		Erasmus
+61031	Caucasian	Male	60	350 mg/m2	700		11		Erasmus
+61032	Caucasian	Female	58	350 mg/m2	650		22		Erasmus
+61033	Caucasian	Female	44	flat 600 mg	600		5		Erasmus
+61034	Caucasian	Female	59	flat 600 mg	600		6		Erasmus
+61035	Hispanic	Male	57	flat 600 mg	600		9		Erasmus
+61080	Hispanic	Female	38	flat 600 mg	600		9		Erasmus
+61081	Caucasian	Female	65	flat 600 mg	600		9		Erasmus
+61082	Caucasian	Male	73	flat 600 mg	600		8		Erasmus
+61083	Caucasian	Female	41	flat 600 mg	600		6		Erasmus
+61084	Caucasian	Male	58	flat 600 mg	600		7		Erasmus
+61086	Caucasian	Male	70	flat 600 mg	600		7		Erasmus
+61097	Caucasian	Female	51	350 mg/m2	770		13		Erasmus
+61098	Caucasian	Male	55	flat 600 mg	600		7		Erasmus
+81001	Caucasian	Male	39	flat 600 mg	600		9		Erasmus
+81005	Caucasian	Male	53	flat 600 mg	600		8		Erasmus
+136001	Caucasian	Female	55	350 mg/m2	620		7		Erasmus
+136002	Caucasian	Male	39	350 mg/m2	720		12		Erasmus
+136004	Caucasian	Female	64	350 mg/m2	500		8		Erasmus
+136009	Caucasian	Female	50	350 mg/m2	560		5		Erasmus
+136014	Caucasian	Female	47	350 mg/m2	525		7		Erasmus
+136018	Caucasian	Male	69	350 mg/m2	650		12		Erasmus
+136019	Caucasian	Female	41	350 mg/m2	740		12		Erasmus
+136030	Caucasian	Female	56	350 mg/m2	650		10		Erasmus
+136033	Caucasian	Male	59	350 mg/m2	720		9		Erasmus
+136049	Caucasian	Female	48	350 mg/m2	610		6		Erasmus
+136077	Caucasian	Male	47	flat 600 mg	600		8		Erasmus
+136079	Caucasian	Male	54	flat 600 mg	600		16		Erasmus
+136080	Caucasian	Female	71	flat 600 mg	600		8		Erasmus
+136081	Caucasian	Female	67	flat 600 mg	600		4		Erasmus
+136085	Caucasian	Female	50	flat 600 mg	600		10		Erasmus
+136087	Caucasian	Male	27	350 mg/m2	620		15		Erasmus
+MO13012	Caucasian	Male	56	formula	660		9		Erasmus
+MO13015	Caucasian	Female	49	formula	720		6		Erasmus
+MO13027	Caucasian	Male	61	350 mg/m2	720		10		Erasmus
+MO13029	Caucasian	Female	58	formula	520		7		Erasmus
+MO13030	Caucasian	Male	62	formula	640		10		Erasmus
+MO13032	Caucasian	Female	68	formula	740		5		Erasmus
+MO13033	Caucasian	Male	59	350 mg/m2	880		10		Erasmus
+MO13035	Caucasian	Male	62	formula	900		6		Erasmus
+MO13038	Caucasian	Male	63	formula	780		9		Erasmus
+MO13039	Caucasian	Male	57	formula	740		10		Erasmus
+MO13040	Caucasian	Female	69	350 mg/m2	680		5		Erasmus
+MO13043	Caucasian	Male	70	350 mg/m2	700		7		Erasmus
+MO13058	Caucasian	Male	61	350 mg/m2	640		7		Erasmus
+MO13060	Caucasian	Male	53	350 mg/m2	660		5		Erasmus
+4-DT		F							Aviano
+5-AO		M							Aviano
+8-FG		M							Aviano
+9-FRZ		F							Aviano
+10-FV		F							Aviano
+11-AP		M							Aviano
+13-PZ		F							Aviano
+17-BP		M							Aviano
+20-LP		F							Aviano
+21-MLC		F							Aviano
+22-FS		M							Aviano
+23-SP		M							Aviano
+25-SS		M							Aviano
+26-TF		F							Aviano
+28-GF		M							Aviano
+31-AF		M							Aviano
+35-NS		F							Aviano
+38-CP		M							Aviano
+39-MM		M							Aviano
+40-UM		F							Aviano
+41-CZ		M							Aviano
+4-BI		M	53		360	2			Aviano
+23-SI		F	62		335	1.86	1.2		Aviano
+48-PI		M	72		340	1.9	0.6		Aviano
+52-BA		M	54		330	1.85	0.4		Aviano
+56-CE		M	72		330	1.83	0.4		Aviano
+57-LU		F	49		280	1.60			Aviano
+58-DI		M	61		360	2.00			Aviano
+60-SC		F	64		250	1.40			Aviano
+61-BE		M	76		300	1.70			Aviano
+62-QU		F	56		260	1.50			Aviano
+63-MA		M	68		290	1.60			Aviano
+64-CO		M	36		324	1.77	0.7		Aviano
+65-PI		M	36		350	1.95	1.4		Aviano
+66-RO		M	45		330	1.83	0.5		Aviano
+83-PE		F	44		270	1.5	0.3		Aviano
+102-DE		M	46		320	1.80			Aviano
+122-DE		F	35		285	1.58	0.7		Aviano
+124-CA		F	26		270	1.5	0.4		Aviano
+131-RA		F	62		290	1.6	0.5		Aviano
+136-GO		F	26		285	1.58	na		Aviano
+163-CH		M	54		390	2.20			Aviano
+168-ON		M	48		335	1.86	0.5		Aviano
+226-LA		F	63		275	1.5			Aviano
+231-DE		F	64		265	1.47	0.6		Aviano
+236-FA		F	57		290	1.68	0.3		Aviano
