@@ -130,7 +130,7 @@ eur.pheno <- pheno.df[which(pheno.df$cluster == 1 | pheno.df$cluster == 3),]
 
 ######## PGRNseq Analysis ###################
 ## load in genotype data
-vcfFile <- 'consensus_seq_variants/consensus.geno.vcf.gz'
+vcfFile <- 'data/consensus_seq_variants/consensus.geno.vcf.gz'
 annot <- annotate.genotypes(vcfFile)
 sparseX <- load.snp.mat(vcfFile, eur.pheno)
 
@@ -140,11 +140,12 @@ genes <- unique(annot$GENEID[which(!is.na(annot$GENEID))])
 ## run the scan for the PGRNseq data
 clean.res <- parallel.skat.scan(genes = genes,
               pheno = eur.pheno,
-              model = "ANC ~ 1",
+              model = "ANC ~ sex + site + dose",
               snpMat = sparseX,
               annot = annot)
 top.hits <- clean.res[order(clean.res$p),]
 gene.X <- sparseX[,annot$names[which(annot$GENEID == top.hits[1, "gene"])]]
+qqunif(clean.res$p)
 
 ## Some initial permutation tests
 #permute.p(pheno.df = eur.pheno, X = gene.X, n = 10000, Q = top.hits[1, "Q"])

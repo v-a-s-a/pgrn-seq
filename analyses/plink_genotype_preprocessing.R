@@ -6,9 +6,6 @@
 .libPaths('~/R/x86_64-pc-linux-gnu-library/3.0/')
 library(GenABEL)
 library(ggplot2)
-library(VariantAnnotation)
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-library(org.Hs.eg.db)
 
 ##############################################################################
 ## CONSTANTS #################################################################
