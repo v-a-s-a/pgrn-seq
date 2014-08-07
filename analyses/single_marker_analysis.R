@@ -11,9 +11,9 @@ library(ggplot2)
 ##############################################################################
 ## CONSTANTS #################################################################
 ##############################################################################
-PHENO.FN <- 'rdata/pheno.Rdata'
-EXOME.GENO.FN <- 'rdata/exome.geno.Rdata'
-SEQ.GENO.FN <- 'rdata/seq.geno.Rdata'
+PHENO.FN <- 'data/rdata/pheno.Rdata'
+EXOME.GENO.FN <- 'data/rdata/exome.geno.Rdata'
+SEQ.GENO.FN <- 'data/rdata/seq.geno.Rdata'
 
 ##############################################################################
 ## FUNCTIONS #################################################################
@@ -24,7 +24,7 @@ SEQ.GENO.FN <- 'rdata/seq.geno.Rdata'
 ##############################################################################
 
 ## load genotype data
-if(!file.access(EXOME.GENO.FN) | !file.access(SEQ.GENO.FN)) {
+if(!file.access(EXOME.GENO.FN)==0 | !file.access(SEQ.GENO.FN)==0) {
   ## genotype data has not yet been processed
   source('analyses/plink_genotype_preprocessing.R')
 } else {
