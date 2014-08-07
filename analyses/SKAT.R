@@ -1,5 +1,5 @@
 ## first pass at a gene-based test using the SKAT package
-
+.libPaths('~/R/x86_64-pc-linux-gnu-library/3.0/')
 library(VariantAnnotation, quietly = T)
 library(SNPRelate, quietly = T)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene, quietly = T)
@@ -26,28 +26,25 @@ flip.allele <- function(x) {
 
 ## parallel SKAT scan
 parallel.skat.scan <- function(genes, pheno, model, snpMat, annot, n.core = 1) {
-  #null.model <- SKAT_Null_Model(ANC ~ sex + site + dose, out_type="C", Adjustment=TRUE)
+  ## compute the SKAT null model
   null.model <- with(eur.pheno, SKAT_Null_Model(as.formula(model), out_type="C", Adjustment=TRUE))
-
   registerDoMC(cores=n.core)
   res <- foreach(i = 1:length(genes), .combine = rbind) %dopar% {
     gene <- genes[i]
     gene.snps <- annot$names[which(annot$GENEID == gene)]
-    if(gene.snps )
     Xgene <- sparseX[,gene.snps]
     ## record mean MAF
-    try({
-      skat <- SKAT(Xgene, null.model)
-      data.frame(gene=gene,
+    try({skat <- SKAT(Xgene, null.model)
+         data.frame(gene=gene,
                   p = as.numeric(skat$p.value),
                   Q = as.numeric(skat$Q),
-                  nsnps = as.numeric(skat$param$n.marker.test)
+                  nsnps = as.numeric(skat$param$n.marker.test))
       })
   }
+  ## cast types into numerical results
   res$p <- as.numeric(res$p)
   res$Q <- as.numeric(res$Q)
   res$nsnps <- as.numeric(res$nsnps)
-  res$meanmaf <- as.numeric(res$meanmaf)
   clean.res <- res[which(!is.na(res$p)),]
 
   ## add gene symbols for interpretation
@@ -112,13 +109,13 @@ pheno.df <- read.table('annotation/genable.pheno', header=T)
 pheno.df$dose <- as.numeric(pheno.df$dose)
 pheno.df$sex <- as.factor(pheno.df$sex)
 ## subset to european-like individuals
-eur.pheno <- pheno.df[which(pheno.df$cluster == 1),]
+eur.pheno <- pheno.df[which(pheno.df$cluster == 1 | pheno.df$cluster == 3),]
 
 
 ######## PGRNseq Analysis ###################
 
 ## load in genotype data
-vcfFile <- 'variant_data/consensus.vcf.gz'
+vcfFile <- 'consensus_seq_variants/consensus.geno.vcf.gz'
 annot <- annotate.genotypes(vcfFile)
 sparseX <- load.snp.mat(vcfFile, eur.pheno)
 
@@ -126,7 +123,11 @@ sparseX <- load.snp.mat(vcfFile, eur.pheno)
 genes <- unique(annot$GENEID[which(!is.na(annot$GENEID))])
 
 ## run the scan for the PGRNseq data
-clean.res <- parallel.skat.scan(genes = genes, pheno = eur.pheno, model = "ANC ~ 1", snpMat = sparseX, annot = annot)
+clean.res <- parallel.skat.scan(genes = genes,
+              pheno = eur.pheno,
+              model = "ANC ~ 1",
+              snpMat = sparseX,
+              annot = annot)
 
 ## Some initial permutation tests
 top.hits <- clean.res[order(clean.res$p),]
