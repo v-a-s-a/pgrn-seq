@@ -5,7 +5,6 @@
 
 ## knitr files and reports
 *.md
-*.pdf
 
 ## binary R data files
 *.Rdata
