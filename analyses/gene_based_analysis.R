@@ -1,4 +1,8 @@
-## first pass at a gene-based test using the SKAT package
+## gene-based scan using the SKAT package
+
+##############################################################################
+## PACKAGES ##################################################################
+##############################################################################
 .libPaths('~/R/x86_64-pc-linux-gnu-library/3.0/')
 library(VariantAnnotation, quietly = T)
 library(SNPRelate, quietly = T)
@@ -9,6 +13,15 @@ library(doMC, quietly = T)
 library(foreach, quietly = T)
 
 source('scripts/qqunif.r')
+
+##############################################################################
+## CONSTANTS #################################################################
+##############################################################################
+PHENO.FN <- 'data/rdata/pheno.Rdata'
+
+##############################################################################
+## FUNCTIONS #################################################################
+##############################################################################
 
 ## Convert to a sparse matrix by reporting the dosage of the minor allele.
 ## The snpMatrix class defaults to reporting dosage of the alternate allele.
@@ -99,21 +112,23 @@ load.snp.mat <- function(vcf, pheno) {
   return(sparseX)
 }
 
+##############################################################################
+## ANALYSIS ##################################################################
+##############################################################################
 
-
-## load up the phenotype data
-## NOTE: This phenotype file was created for the GenABEL GWAS. It is not raw!
-##        It has removed some missing data, and standardized some sample names.
-pheno.df <- read.table('annotation/genable.pheno', header=T)
-## unfortunately the dosing regime is too big to be treated as a factor variable
-pheno.df$dose <- as.numeric(pheno.df$dose)
-pheno.df$sex <- as.factor(pheno.df$sex)
+## load phenotype data
+if(!file.access(PHENO.FN)==0) {
+  ## phenotype data has not yet been generated -- do that now
+  source('analyses/phenotype_preprocessing.R')
+} else {
+  ## load alrady processed phenotype file
+  load(PHENO.FN)
+}
 ## subset to european-like individuals
 eur.pheno <- pheno.df[which(pheno.df$cluster == 1 | pheno.df$cluster == 3),]
 
 
 ######## PGRNseq Analysis ###################
-
 ## load in genotype data
 vcfFile <- 'consensus_seq_variants/consensus.geno.vcf.gz'
 annot <- annotate.genotypes(vcfFile)
@@ -128,10 +143,10 @@ clean.res <- parallel.skat.scan(genes = genes,
               model = "ANC ~ 1",
               snpMat = sparseX,
               annot = annot)
-
-## Some initial permutation tests
 top.hits <- clean.res[order(clean.res$p),]
 gene.X <- sparseX[,annot$names[which(annot$GENEID == top.hits[1, "gene"])]]
+
+## Some initial permutation tests
 #permute.p(pheno.df = eur.pheno, X = gene.X, n = 10000, Q = top.hits[1, "Q"])
 
 
