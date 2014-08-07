@@ -11,8 +11,8 @@ library(SNPRelate)
 ##############################################################################
 ## CONSTANTS #################################################################
 ##############################################################################
-PHENO.FN <- 'rdata/pheno.Rdata' # dataframe of processed phenotype data
-exome.fbase <- 'exomechip_data/innocenti_082613'
+PHENO.FN <- 'data/rdata/pheno.Rdata' # dataframe of processed phenotype data
+exome.fbase <- 'data/exomechip_data/innocenti_082613'
 
 ##############################################################################
 ## FUNCTIONS #################################################################
@@ -36,11 +36,11 @@ homogenizeSampleIds <- function(x) {
 ##############################################################################
 
 ## read in phenotype (ANC) and covariate data
-anc <- read.table('annotation/ANC_Nadir_FULL_061614.csv', sep='\t', header=T, stringsAsFactors=F)
+anc <- read.table('data/annotation/ANC_Nadir_FULL_061614.csv', sep='\t', header=T, stringsAsFactors=F)
 ## clean up the italian sample IDs
 anc$Sample <- unlist(lapply(anc$Subject_ID, removeACO) )
 anc$Sample <- unlist(lapply(anc$Sample, homogenizeSampleIds) )
-covars <- read.table('annotation/Covariates_Vasa_newIDs.csv', head=T, sep='\t', stringsAsFactors=F)
+covars <- read.table('data/annotation/Covariates_Vasa_newIDs.csv', head=T, sep='\t', stringsAsFactors=F)
 covars$SM_ID <- as.character(covars$SM_ID)
 clean.pheno <- merge(anc, covars, by.x="Sample", by.y="Sample.ID")
 nomiss.pheno <- clean.pheno[which(!is.na(clean.pheno$ANC_nadir_1000cells.per.mcL)  & !is.na(clean.pheno$SM_ID) ),]
