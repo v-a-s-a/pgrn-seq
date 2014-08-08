@@ -6,6 +6,7 @@
 ## knitr files and reports
 *.md
 
-## binary R data files
-*.Rdata
+## data
+data/
+
 
