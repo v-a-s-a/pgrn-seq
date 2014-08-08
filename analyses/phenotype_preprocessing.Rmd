@@ -1,23 +1,18 @@
-## tidying genotype and phenotype data
+# PGRNseq Sample and Phenotype Processing
 
-##############################################################################
-## PACKAGES ##################################################################
-##############################################################################
+```{r load_packages, include=FALSE}
 .libPaths('~/R/x86_64-pc-linux-gnu-library/3.0/')
 library(ggplot2)
 library(mclust)
 library(SNPRelate)
+```
 
-##############################################################################
-## CONSTANTS #################################################################
-##############################################################################
-PHENO.FN <- 'data/rdata/pheno.Rdata' # dataframe of processed phenotype data
-exome.fbase <- 'data/exomechip_data/innocenti_082613'
+```{r define_constants, include=FALSE}
+PHENO.FN <- '../data/rdata/pheno.Rdata' # dataframe of processed phenotype data
+exome.fbase <- '../data/exomechip_data/innocenti_082613'
+```
 
-##############################################################################
-## FUNCTIONS #################################################################
-##############################################################################
-
+```{r define_functions, include=FALSE}
 ## weird sample ID format for italian samples
 removeACO <- function(x) {
   return(gsub('\\+AC0', '', x))
@@ -30,20 +25,25 @@ removemgm2 <- function(x) {
 homogenizeSampleIds <- function(x) {
   return(gsub('M0', 'MO', x))
 }
+```
 
-##############################################################################
-## PHENOTYPE #################################################################
-##############################################################################
-
+```{r load_phenotye, include=FALSE}
 ## read in phenotype (ANC) and covariate data
-anc <- read.table('data/annotation/ANC_Nadir_FULL_061614.csv', sep='\t', header=T, stringsAsFactors=F)
+anc <- read.table('../data/annotation/ANC_Nadir_FULL_061614.csv',
+                  sep='\t',
+                  header=T,
+                  stringsAsFactors=F)
 ## clean up the italian sample IDs
 anc$Sample <- unlist(lapply(anc$Subject_ID, removeACO) )
 anc$Sample <- unlist(lapply(anc$Sample, homogenizeSampleIds) )
-covars <- read.table('data/annotation/Covariates_Vasa_newIDs.csv', head=T, sep='\t', stringsAsFactors=F)
+covars <- read.table('../data/annotation/Covariates_Vasa_newIDs.csv',
+                     head=T,
+                     sep='\t',
+                     stringsAsFactors=F)
 covars$SM_ID <- as.character(covars$SM_ID)
 clean.pheno <- merge(anc, covars, by.x="Sample", by.y="Sample.ID")
-nomiss.pheno <- clean.pheno[which(!is.na(clean.pheno$ANC_nadir_1000cells.per.mcL)  & !is.na(clean.pheno$SM_ID) ),]
+nomiss.pheno <- clean.pheno[which(!is.na(clean.pheno$ANC_nadir_1000cells.per.mcL) &
+                                  !is.na(clean.pheno$SM_ID) ),]
 
 ## make factor variables out of the covariates
 nomiss.pheno$Study.site <- as.factor(nomiss.pheno$Study.site)
@@ -56,39 +56,63 @@ nomiss.pheno$Sex <- as.factor(nomiss.pheno$Sex)
 nomiss.pheno$Race[which(nomiss.pheno$Race == "")] <- NA
 ## clean up the dose variables
 nomiss.pheno$Dose..mg. <- as.numeric(unlist(lapply(list(nomiss.pheno$Dose..mg.), removemgm2)))
+```
 
-## write a genabel phenotype file
+Format the phenotype data for downstream processing.
+
+```{r format_pheno}
 pheno.df <- data.frame(id=nomiss.pheno$SM_ID,
                        sex=nomiss.pheno$Sex,
                        ANC=nomiss.pheno$ANC_nadir_1000cells.per.mcL,
                        site=nomiss.pheno$Study.site,
                        race=nomiss.pheno$Race,
                        dose=nomiss.pheno$Dose..mg.)
+```
 
+```{r unlink_existing, include=FALSE}
 ## cleanup SNPRelate files if they exist
 if(!file.access(paste0(exome.fbase, '.gds'))) unlink(paste0(exome.fbase, '.gds'))
-
-## run PCA and cluster samples
+## load exome chip data from PLINK files
 snpgdsBED2GDS(bed.fn=paste0(exome.fbase, '.bed'),
               bim.fn=paste0(exome.fbase, '.bim'),
               fam.fn=paste0(exome.fbase, '.fam'),
               out.gdsfn=paste0(exome.fbase, '.gds'))
 exome.geno <- openfn.gds(filename=paste0(exome.fbase, '.gds'))
+```
 
-## prune for LD
+## PCA
+Prune SNP set for LD, filter on MAF, and run PCA.
+```{r pca}
 ld.snpset <- snpgdsLDpruning(exome.geno)
-
-## run PCA
 pca <- snpgdsPCA(exome.geno, snp.id = unlist(ld.snpset), maf = 0.05)
 pca.df <- data.frame(sample.id=pca$sample.id, eigenvect=pca$eigenvect)
+```
 
-## pull sample covariates to identify sources of variation
+## Model-based Clustering
+Add principal components to the phenotype data frame, then cluster samples in the first two PCs.
+```{r cluster}
 pheno.df <- merge(pca.df, pheno.df, by.x = "sample.id", by.y = "id")
 names(pheno.df)[which(names(pheno.df) == "sample.id")] <- "id"
-
-## run clustering
 cluster <- Mclust(pheno.df[,c("eigenvect.1", "eigenvect.2")])
 pheno.df$cluster <- cluster$classification
+```
 
+Examine the results of our PCA and clustering the first two PCs.
+```{r pca_plots, echo=FALSE}
+cluster.plt <- ggplot(pheno.df, aes(x=eigenvect.1, y=eigenvect.2, color=factor(cluster))) +
+                      geom_point()
+reported.plt <- ggplot(pheno.df, aes(x=eigenvect.1, y=eigenvect.2, color=factor(race))) +
+                      geom_point()
+euro.zoom.plt <- ggplot(pheno.df, aes(x=eigenvect.1, y=eigenvect.2, color=factor(site))) +
+                        geom_point() +
+                        xlim(-0.05, 0.05) + ylim(-0.05, 0.05)
+
+print(reported.plt + ggtitle('PCA w/ self reported ancestry'))
+print(cluster.plt + ggtitle('PCA w/ model-based clustering'))
+print(euro.zoom.plt + ggtitle('PCA: european cluster colored by site'))
+```
+
+```{r save, include=FALSE}
 ## dump phenotype data to disk
 save(pheno.df, file=PHENO.FN)
+```
