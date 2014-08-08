@@ -1,10 +1,8 @@
 # PGRNseq Project
 
-# Repository for all source code and documentation for the PGRNseq analysis. We use [knitr](http://yihui.name/knitr/) to run the analysis and generate data and analysis reports.
+# Repository for all source code and documentation for the PGRNseq analysis. We use [knitr](http://yihui.name/knitr/) to run the R scripts and generate data and analysis reports.
 
-## Report generation:
-
-Assuming you havei the raw data/ directory, GNU make, and R with the appropriate packages installed, simply type:
+Assuming you have the latest data/ directory (not under version control), GNU make, and R with the appropriate packages installed, simply type:
 
 > make
 
