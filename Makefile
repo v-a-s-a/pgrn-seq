@@ -1,16 +1,19 @@
 ## testing out GNU make to compile knitr docs
 R_OPTS=--vanilla
-lab_notebook/analysis-description.pdf: lab_notebook/analysis-description.Rmd
+
+all: reports/analysis-description.pdf reports/phenotype_preprocessing.pdf reports/single_marker_analysis.pdf
+
+reports/analysis-description.pdf: lab_notebook/analysis-description.Rmd
 	cd lab_notebook; R ${R_OPTS} -e 'library(knitr);knit("analysis-description.Rmd")'
-	cd lab_notebook; pandoc analysis-description.md -o analysis-description.pdf
+	cd lab_notebook; pandoc analysis-description.md -o ../reports/analysis-description.pdf
 
-analyses/phenotype_preprocessing.pdf: analyses/phenotype_preprocessing.Rmd
+reports/phenotype_preprocessing.pdf: analyses/phenotype_preprocessing.Rmd
 	cd analyses/; R ${R_OPTS} -e 'library(knitr);knit("phenotype_preprocessing.Rmd")'
-	cd analyses/; pandoc phenotype_preprocessing.md -o phenotype_preprocessing.pdf 
+	cd analyses/; pandoc phenotype_preprocessing.md -o ../reports/phenotype_preprocessing.pdf 
 
-analyses/single_marker_analysis.pdf: analyses/single_marker_analysis.Rmd
+reports/single_marker_analysis.pdf: analyses/single_marker_analysis.Rmd
 	cd analyses/; R ${R_OPTS} -e 'library(knitr);knit("single_marker_analysis.Rmd")'
-	cd analyses/; pandoc single_marker_analysis.md -o single_marker_analysis.pdf 
+	cd analyses/; pandoc single_marker_analysis.md -o ../reports/single_marker_analysis.pdf 
 
 clean:
 	cd lab_notebook; rm analysis-description.md
