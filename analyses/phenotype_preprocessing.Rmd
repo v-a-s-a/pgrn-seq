@@ -52,7 +52,6 @@ nomiss.pheno$Sex[which(nomiss.pheno$Sex=='Male')] <- '1'
 nomiss.pheno$Sex[which(nomiss.pheno$Sex=='M')] <- '1'
 nomiss.pheno$Sex[which(nomiss.pheno$Sex=='Female')] <- '0'
 nomiss.pheno$Sex[which(nomiss.pheno$Sex=='F')] <- '0'
-nomiss.pheno$Sex <- as.factor(nomiss.pheno$Sex)
 nomiss.pheno$Race[which(nomiss.pheno$Race == "")] <- NA
 ## clean up the dose variables
 nomiss.pheno$Dose..mg. <- as.numeric(unlist(lapply(list(nomiss.pheno$Dose..mg.), removemgm2)))
@@ -62,12 +61,25 @@ Format the phenotype data for downstream processing.
 
 ```{r format_pheno}
 pheno.df <- data.frame(id=nomiss.pheno$SM_ID,
-                       sex=nomiss.pheno$Sex,
-                       ANC=nomiss.pheno$ANC_nadir_1000cells.per.mcL,
-                       site=nomiss.pheno$Study.site,
-                       race=nomiss.pheno$Race,
-                       dose=nomiss.pheno$Dose..mg.)
+                       sex=as.factor(nomiss.pheno$Sex),
+                       ANC=as.numeric(nomiss.pheno$ANC_nadir_1000cells.per.mcL),
+                       site=as.factor(nomiss.pheno$Study.site),
+                       race=as.factor(nomiss.pheno$Race),
+                       dose=as.factor(nomiss.pheno$Dose..mg.))
 ```
+
+
+## Expirical Distributions of Phenotypes
+```{r anc_plot}
+anc.plt <- ggplot(pheno.df, aes(x=ANC)) + geom_histogram()
+print(anc.plt + ggtitle('ANC'))
+```
+
+```{r loganc_plt}
+loganc.plt <- ggplot(pheno.df, aes(x=log10(ANC))) + geom_histogram()
+print(loganc.plt + ggtitle('log10(ANC)'))
+```
+
 
 ```{r unlink_existing, include=FALSE}
 ## cleanup SNPRelate files if they exist
@@ -88,6 +100,13 @@ pca <- snpgdsPCA(exome.geno, snp.id = unlist(ld.snpset), maf = 0.05)
 pca.df <- data.frame(sample.id=pca$sample.id, eigenvect=pca$eigenvect)
 ```
 
+Look at the first two PCs, and color the samples by self-reported ancestry.
+```{r reported_plot, echo=FALSE}
+reported.plt <- ggplot(pheno.df, aes(x=eigenvect.1, y=eigenvect.2, color=factor(race))) +
+                      geom_point()
+print(reported.plt + ggtitle('PCA w/ self reported ancestry'))
+```
+
 ## Model-based Clustering
 Add principal components to the phenotype data frame, then cluster samples in the first two PCs.
 ```{r cluster}
@@ -98,17 +117,17 @@ pheno.df$cluster <- cluster$classification
 ```
 
 Examine the results of our PCA and clustering the first two PCs.
-```{r pca_plots, echo=FALSE}
+```{r cluster_plot, echo=FALSE}
 cluster.plt <- ggplot(pheno.df, aes(x=eigenvect.1, y=eigenvect.2, color=factor(cluster))) +
                       geom_point()
-reported.plt <- ggplot(pheno.df, aes(x=eigenvect.1, y=eigenvect.2, color=factor(race))) +
-                      geom_point()
+print(cluster.plt + ggtitle('PCA w/ model-based clustering'))
+```
+
+Taking a closer look at the clustering of the Europeans. We may be able to explain some genetic variation just by site of ascertainment.
+```{r euro_zoom_plot, echo=FALSE}
 euro.zoom.plt <- ggplot(pheno.df, aes(x=eigenvect.1, y=eigenvect.2, color=factor(site))) +
                         geom_point() +
-                        xlim(-0.05, 0.05) + ylim(-0.05, 0.05)
-
-print(reported.plt + ggtitle('PCA w/ self reported ancestry'))
-print(cluster.plt + ggtitle('PCA w/ model-based clustering'))
+                        xlim(-0.05, 0.025) + ylim(-0.05, 0.05)
 print(euro.zoom.plt + ggtitle('PCA: european cluster colored by site'))
 ```
 

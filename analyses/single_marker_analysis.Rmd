@@ -1,5 +1,6 @@
 # simple and multiple regression of the phenotype
 
+```{r load_packages, include=FALSE}
 ##############################################################################
 ## PACKAGES ##################################################################
 ##############################################################################
@@ -8,41 +9,73 @@
 library(GenABEL)
 library(ggplot2)
 
-##############################################################################
-## CONSTANTS #################################################################
-##############################################################################
-PHENO.FN <- 'data/rdata/pheno.Rdata'
-EXOME.GENO.FN <- 'data/rdata/exome.geno.Rdata'
-SEQ.GENO.FN <- 'data/rdata/seq.geno.Rdata'
+```
 
-##############################################################################
-## FUNCTIONS #################################################################
-##############################################################################
+```{r define_constants, include=FALSE}
+PHENO.FN <- '../data/rdata/pheno.Rdata'
+EXOME.GENO.FN <- '../data/rdata/exome.geno.Rdata'
+SEQ.GENO.FN <- '../data/rdata/seq.geno.Rdata'
+```
 
-##############################################################################
-## ANALYSIS ##################################################################
-##############################################################################
+```{r define_functions, include=FALSE}
+source('../scripts/qqunif.r')
+```
 
-## load genotype data
+```{r load_data, include=FALSE}
 if(!file.access(EXOME.GENO.FN)==0 | !file.access(SEQ.GENO.FN)==0) {
   ## genotype data has not yet been processed
-  source('analyses/plink_genotype_preprocessing.R')
+  source('plink_genotype_preprocessing.R')
 } else {
   ## load processed genotype data
   load(EXOME.GENO.FN)
   load(SEQ.GENO.FN)
 }
+```
 
-## run scans
+## Model specification
+```{r model_spec}
 basic.model <- ANC ~ 1
 full.model <- ANC ~ sex + site + dose
-#score.results <- qtscore(scale(ANC) ~ sex + site + dose, seq.geno, trait="gaussian")
+```
+
+## PGRNseq GWAS
+### Simple Regression
+```{r seq_simple_regression}
 seq.reg.results <- mlreg(basic.model, seq.geno, trait="gaussian")
-exome.reg.results <- mlreg(basic.model, exome.geno, trait="gaussian")
-
-top.exome <- head(exome.reg.results[order(exome.reg.results[,"P1df"]),])
-
-## summarize
-source('scripts/qqunif.r')
 qqunif(seq.reg.results[,"P1df"])
+title('PGRNseq Simple Linear Regression GWAS')
+```
+
+### Multiple Regression
+```{r seq_multiple_regression}
+seq.reg.results <- mlreg(full.model, seq.geno, trait="gaussian")
+qqunif(seq.reg.results[,"P1df"])
+title('PGRNseq Multiple Linear Regression GWAS')
+```
+
+## Exome chip GWAS
+### Simple Regression
+```{r exome_simple_regression}
+exome.reg.results <- mlreg(basic.model, exome.geno, trait="gaussian")
+qqunif(exome.reg.results[,"P1df"])
+title('Exome chip Simple Linear Regression GWAS')
+```
+
+### Multiple Regression
+```{r exome_multiple_regression}
+exome.reg.results <- mlreg(full.model, exome.geno, trait="gaussian")
+qqunif(seq.reg.results[,"P1df"])
+title('Exome Chip Multiple Linear Regression')
+```
+
+##Known signals
+UGT1A1*93: rs10929302  
+hg19 chr2:234,665,782 G/A  
+1000 Genomes allele frequencies:  
+  A: 27%  
+  G: 73%  
+```{r known_signal, results='asis'}
+rs10929302.res <- results(seq.reg.results)['chr2:234665782:G:A',]
+kable( rs10929302.res[,c('A1', 'A2','N', 'effB', 'se_effB', 'P1df')] )
+```
 
