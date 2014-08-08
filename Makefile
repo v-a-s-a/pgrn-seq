@@ -8,5 +8,10 @@ analyses/phenotype_preprocessing.pdf: analyses/phenotype_preprocessing.Rmd
 	cd analyses/; R ${R_OPTS} -e 'library(knitr);knit("phenotype_preprocessing.Rmd")'
 	cd analyses/; pandoc phenotype_preprocessing.md -o phenotype_preprocessing.pdf 
 
+analyses/single_marker_analysis.pdf: analyses/single_marker_analysis.Rmd
+	cd analyses/; R ${R_OPTS} -e 'library(knitr);knit("single_marker_analysis.Rmd")'
+	cd analyses/; pandoc single_marker_analysis.md -o single_marker_analysis.pdf 
+
 clean:
 	cd lab_notebook; rm analysis-description.md
+	cd analyses/; rm phenotype_preprocessing.md single_marker_analysis.md
