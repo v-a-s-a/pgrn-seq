@@ -1,6 +1,6 @@
 # PGRNseq Project
 
-# Repository for all source code and documentation for the PGRNseq analysis. We use [knitr](http://yihui.name/knitr/) to run the analysis and generate a report.
+# Repository for all source code and documentation for the PGRNseq analysis. We use [knitr](http://yihui.name/knitr/) to run the analysis and generate data and analysis reports.
 
 ## Report generation:
 
