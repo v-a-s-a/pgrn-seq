@@ -4,9 +4,9 @@
 
 Assuming you have the latest data/ directory (not under version control), GNU make, and R with the appropriate packages installed, simply type:
 
-> make
+> make all
 
-in the top level of the cloned repository. This will knit a PDF report in the lab\_notebook/ directory.
+in the top level of the cloned repository. This will run the analysis and knit PDF reports in the reports/ directory.
 
 ## Topoisomerase 
 
