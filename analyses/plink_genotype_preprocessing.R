@@ -6,13 +6,14 @@
 .libPaths('~/R/x86_64-pc-linux-gnu-library/3.0/')
 library(GenABEL)
 library(ggplot2)
+library(knitr)
 
 ##############################################################################
 ## CONSTANTS #################################################################
 ##############################################################################
-PHENO.FN <- 'data/rdata/pheno.Rdata'
-EXOME.GENO.FN <- 'data/rdata/exome.geno.Rdata'
-SEQ.GENO.FN <- 'data/rdata/seq.geno.Rdata'
+PHENO.FN <- '../data/rdata/pheno.Rdata'
+EXOME.GENO.FN <- '../data/rdata/exome.geno.Rdata'
+SEQ.GENO.FN <- '../data/rdata/seq.geno.Rdata'
 
 ##############################################################################
 ## FUNCTIONS #################################################################
@@ -35,14 +36,14 @@ plink.subset <- function(originalBase, subsetBase, samples.fn) {
 ## load and process the phenotype information
 if(!file.access(PHENO.FN)==0) {
   ## phenotype data has not yet been generated -- do that now
-  source('analyses/phenotype_preprocessing.R')
+  source(purl('phenotype_preprocessing.R'))
 } else {
   ## load alrady processed phenotype file
   load(PHENO.FN)
 }
 
 ## subset original PLINK files to only samples with non-missing phenotype data
-nonmissingSamples.fn <- 'data/annotation/nonmissing_phenotype_samples.txt'
+nonmissingSamples.fn <- '../data/annotation/nonmissing_phenotype_samples.txt'
 write.table( data.frame(fid=pheno.df$id, iid=pheno.df$id),
               nonmissingSamples.fn,
               row.names=F,
@@ -50,17 +51,17 @@ write.table( data.frame(fid=pheno.df$id, iid=pheno.df$id),
               sep='\t')
 
 ## convert sequence PLINK data to GenABEL
-seqPlink <- 'data/qc_report/consensus/consensus'
+seqPlink <- '../data/qc_report/consensus/consensus'
 plink.subset(seqPlink, paste0(seqPlink, '.nomiss'), nonmissingSamples.fn)
-genabel.geno <- 'data/qc_report/consensus/consensus.genabel'
+genabel.geno <- '../data/qc_report/consensus/consensus.genabel'
 convert.snp.ped(pedfile = paste0(seqPlink, '.nomiss.ped'),
                 mapfile = paste0(seqPlink, '.nomiss.map'),
                 outfile = genabel.geno)
 
 ## convert exome PLINK data to GenABEL
-exomePlink <- 'data/exomechip_data/innocenti_082613'
+exomePlink <- '../data/exomechip_data/innocenti_082613'
 plink.subset(exomePlink, paste0(exomePlink, '.nomiss'), nonmissingSamples.fn)
-exome.geno <- 'data/exomechip_data/innocenti_082613.genabel'
+exome.geno <- '../data/exomechip_data/innocenti_082613.genabel'
 convert.snp.ped(pedfile = paste0(exomePlink, '.nomiss.ped'),
                 mapfile = paste0(exomePlink, '.nomiss.map'),
                 outfile = exome.geno)
@@ -68,7 +69,7 @@ convert.snp.ped(pedfile = paste0(exomePlink, '.nomiss.ped'),
 ## load and clean data
 ## subset markers by: minor allele frequency and callrate
 ## subset samples by: PCA cluster (i.e. genetic ethnicity)
-genabel.pheno <- "data/annotation/genable.pheno"
+genabel.pheno <- "../data/annotation/genable.pheno"
 write.table(pheno.df, file=genabel.pheno, row.names=F)
 ## Seqeunce data
 consensus <- load.gwaa.data(phenofile = genabel.pheno, genofile = genabel.geno)
