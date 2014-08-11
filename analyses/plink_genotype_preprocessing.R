@@ -36,7 +36,7 @@ plink.subset <- function(originalBase, subsetBase, samples.fn) {
 ## load and process the phenotype information
 if(!file.access(PHENO.FN)==0) {
   ## phenotype data has not yet been generated -- do that now
-  source(purl('phenotype_preprocessing.R'))
+  source(purl('phenotype_preprocessing.Rmd'))
 } else {
   ## load alrady processed phenotype file
   load(PHENO.FN)
@@ -76,14 +76,14 @@ consensus <- load.gwaa.data(phenofile = genabel.pheno, genofile = genabel.geno)
 seq.snpsubset <- check.marker(data = consensus,
                   maf = 0.05,
                   callrate = 0.95,
-                  idsubset = as.character(pheno.df$id[which(pheno.df$cluster==1 | pheno.df$cluster==3)]))
+                  idsubset = as.character(pheno.df$id[which(pheno.df$iseuro == TRUE)]))
 seq.geno <- consensus[seq.snpsubset$idok, seq.snpsubset$snpok]
 ## Exome data
 exome <- load.gwaa.data(phenofile = genabel.pheno, genofile = exome.geno)
 exome.snpsubset <- check.marker(data = exome,
                     maf = 0.05,
                     callrate = 0.95,
-                    idsubset = as.character(pheno.df$id[which(pheno.df$cluster==1 | pheno.df$cluster==3)]))
+                    idsubset = as.character(pheno.df$id[which(pheno.df$iseuro == TRUE)]))
 exome.geno <- exome[exome.snpsubset$idok, exome.snpsubset$snpok]
 
 ## dump data to disk

@@ -98,6 +98,7 @@ Prune SNP set for LD, filter on MAF, and run PCA.
 ld.snpset <- snpgdsLDpruning(exome.geno)
 pca <- snpgdsPCA(exome.geno, snp.id = unlist(ld.snpset), maf = 0.05)
 pca.df <- data.frame(sample.id=pca$sample.id, eigenvect=pca$eigenvect)
+pheno.df <- merge(pca.df, pheno.df, by.x = "sample.id", by.y = "id")
 ```
 
 Look at the first two PCs, and color the samples by self-reported ancestry.
@@ -110,10 +111,12 @@ print(reported.plt + ggtitle('PCA w/ self reported ancestry'))
 ## Model-based Clustering
 Add principal components to the phenotype data frame, then cluster samples in the first two PCs.
 ```{r cluster}
-pheno.df <- merge(pca.df, pheno.df, by.x = "sample.id", by.y = "id")
 names(pheno.df)[which(names(pheno.df) == "sample.id")] <- "id"
-cluster <- Mclust(pheno.df[,c("eigenvect.1", "eigenvect.2")])
-pheno.df$cluster <- cluster$classification
+cluster3 <- Mclust(pheno.df[,c("eigenvect.1", "eigenvect.2")], G=3) # specify 3 mixture components
+clustern <- Mclust(pheno.df[,c("eigenvect.1", "eigenvect.2")]) # select # of components using BIC
+pheno.df$cluster <- clustern$classification
+euroclust <- which(table(pheno.df$cluster) == max(table(pheno.df$cluster))) # euro clust is largest
+pheno.df$iseuro <- pheno.df$cluster == euroclust 
 ```
 
 Examine the results of our PCA and clustering the first two PCs.

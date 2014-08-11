@@ -8,7 +8,6 @@
 .libPaths('~/R/x86_64-pc-linux-gnu-library/3.0/')
 library(GenABEL)
 library(ggplot2)
-
 ```
 
 ```{r define_constants, include=FALSE}
@@ -29,6 +28,12 @@ if(!file.access(EXOME.GENO.FN)==0 | !file.access(SEQ.GENO.FN)==0) {
   ## load processed genotype data
   load(EXOME.GENO.FN)
   load(SEQ.GENO.FN)
+}
+
+if(!file.access(PHENO.FN)==0) {
+  source(purl('phenotype_preprocessing.R'))
+} else {
+  load(PHENO.FN)
 }
 ```
 
