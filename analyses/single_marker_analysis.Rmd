@@ -1,9 +1,6 @@
 # simple and multiple regression of the phenotype
 
 ```{r load_packages, include=FALSE}
-##############################################################################
-## PACKAGES ##################################################################
-##############################################################################
 ## Downgrading to R 3.0.2 version of R to maintain package compatibility
 .libPaths('~/R/x86_64-pc-linux-gnu-library/3.0/')
 library(GenABEL)
@@ -18,6 +15,15 @@ SEQ.GENO.FN <- '../data/rdata/seq.geno.Rdata'
 
 ```{r define_functions, include=FALSE}
 source('../scripts/qqunif.r')
+
+## http://haky-functions.blogspot.com/
+my.invnorm = function(x)
+{
+ res = rank(x)
+ res = qnorm(res/(length(res)+0.5))
+ return(res)
+}
+
 ```
 
 ```{r load_data, include=FALSE}
@@ -38,9 +44,12 @@ if(!file.access(PHENO.FN)==0) {
 ```
 
 ## Model specification
+Here we define two models: a simple regression of SNP on phenotype, and a full model including available covariates. Both sample sex and site of ascertainment are natural categorical covariates. The encoding of the dosing regimen deserves some careful consideration. This can be treated as a continuous covariate, a categorical covariate, or perhaps some different altogether. Currently, I am treating it as a continuous variable. I am able to include it in fitting the SKAT-O model as an added benefit. We simply do not have the degrees of freedom necessary (i.e. number of samples) to include 33 dummy variables.
+
 ```{r model_spec}
-basic.model <- ANC ~ 1
-full.model <- ANC ~ sex + site + dose
+trans.fun <- log
+basic.model <- trans.fun(ANC) ~ 1
+full.model <- trans.fun(ANC) ~ sex + site + as.numeric(dose)
 ```
 
 ## PGRNseq GWAS

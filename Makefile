@@ -15,6 +15,10 @@ reports/single_marker_analysis.pdf: analyses/single_marker_analysis.Rmd
 	cd analyses/; R ${R_OPTS} -e 'library(knitr);knit("single_marker_analysis.Rmd")'
 	cd analyses/; pandoc single_marker_analysis.md -o ../reports/single_marker_analysis.pdf 
 
+reports/gene_based_analysis.pdf: analyses/gene_based_analysis.Rmd
+	cd analyses/;  R ${R_OPTS} -e 'library(knitr);knit("gene_based_analysis.Rmd")'
+	cd analyses/; pandoc gene_based_analysis.md -o ../reports/gene_based_analysis.pdf
+
 clean:
 	cd lab_notebook; rm analysis-description.md
-	cd analyses/; rm phenotype_preprocessing.md single_marker_analysis.md
+	cd analyses/; rm phenotype_preprocessing.md single_marker_analysis.md gene_based_analysis.md
