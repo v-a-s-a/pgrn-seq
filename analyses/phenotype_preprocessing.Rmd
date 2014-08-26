@@ -25,6 +25,15 @@ removemgm2 <- function(x) {
 homogenizeSampleIds <- function(x) {
   return(gsub('M0', 'MO', x))
 }
+
+## http://haky-functions.blogspot.com/
+my.invnorm = function(x)
+{
+ res = rank(x)
+ res = qnorm(res/(length(res)+0.5))
+ return(res)
+}
+
 ```
 
 ```{r load_phenotye, include=FALSE}
@@ -57,7 +66,6 @@ nomiss.pheno$Race[which(nomiss.pheno$Race == "")] <- NA
 nomiss.pheno$Dose..mg. <- as.numeric(unlist(lapply(list(nomiss.pheno$Dose..mg.), removemgm2)))
 ```
 
-Format the phenotype data for downstream processing.
 
 ```{r format_pheno}
 pheno.df <- data.frame(id=nomiss.pheno$SM_ID,
@@ -68,6 +76,19 @@ pheno.df <- data.frame(id=nomiss.pheno$SM_ID,
                        dose=as.factor(nomiss.pheno$Dose..mg.))
 ```
 
+## Data ##
+### Sample size: ###
+`nrow(pheno.df)` samples in the phenotype file. `sum(!is.na(pheno.df$ANC))` samples that have a non-missing, non-zero Neutrophil count phenotype
+
+### Phenotypes: ###
+Neutrophil Count Nadir (1000 cells/mcL)
+log Neutrophil Count Nadir
+Inverse normalized Neutrophil Count Nadir.
+
+### Covariates: ###
+Sex :: factor
+Site of ascertainment :: factor
+Dosage regimen :: continuous
 
 ## Expirical Distributions of Phenotypes
 ```{r anc_plot}
@@ -76,10 +97,14 @@ print(anc.plt + ggtitle('ANC'))
 ```
 
 ```{r loganc_plt}
-loganc.plt <- ggplot(pheno.df, aes(x=log10(ANC))) + geom_histogram()
-print(loganc.plt + ggtitle('log10(ANC)'))
+loganc.plt <- ggplot(pheno.df, aes(x=log(ANC))) + geom_histogram()
+print(loganc.plt + ggtitle('log(ANC)'))
 ```
 
+```{r normanc_plt}
+loganc.plt <- ggplot(pheno.df, aes(x=my.invnorm(ANC))) + geom_histogram()
+print(loganc.plt + ggtitle('Inverse Normalized ANC'))
+```
 
 ```{r unlink_existing, include=FALSE}
 ## cleanup SNPRelate files if they exist
@@ -91,6 +116,9 @@ snpgdsBED2GDS(bed.fn=paste0(exome.fbase, '.bed'),
               out.gdsfn=paste0(exome.fbase, '.gds'))
 exome.geno <- openfn.gds(filename=paste0(exome.fbase, '.gds'))
 ```
+## Exome chip:
+
+
 
 ## PCA
 Prune SNP set for LD, filter on MAF, and run PCA.

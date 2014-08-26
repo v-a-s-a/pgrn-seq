@@ -150,7 +150,7 @@ genes <- unique(annot$GENEID[which(!is.na(annot$GENEID))])
 
 Fit a SKAT-O model for each unique gene in our annotation. This scan is farmed out across multiple cores.
 
-```{r seq_skat_o}
+```{r seq_skat_o, echo=FALSE}
 clean.res <- parallel.skat.scan(genes = genes,
               pheno = eur.pheno,
               model = "my.invnorm(ANC) ~ sex + site + as.numeric(dose)",

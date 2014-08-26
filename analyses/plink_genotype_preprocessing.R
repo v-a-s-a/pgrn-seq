@@ -75,8 +75,8 @@ write.table(pheno.df, file=genabel.pheno, row.names=F)
 consensus <- load.gwaa.data(phenofile = genabel.pheno, genofile = genabel.geno)
 seq.snpsubset <- check.marker(data = consensus,
                   maf = 0.05,
-                  callrate = 0.95,
-                  idsubset = as.character(pheno.df$id[which(pheno.df$iseuro == TRUE)]))
+                  callrate = 0.95)
+#                  idsubset = as.character(pheno.df$id[which(pheno.df$iseuro == TRUE)]))
 seq.geno <- consensus[seq.snpsubset$idok, seq.snpsubset$snpok]
 ## Exome data
 exome <- load.gwaa.data(phenofile = genabel.pheno, genofile = exome.geno)

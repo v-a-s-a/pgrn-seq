@@ -26,7 +26,9 @@ my.invnorm = function(x)
 
 ```
 
-```{r load_data, include=FALSE}
+Load the genotype data.
+
+```{r load_data}
 if(!file.access(EXOME.GENO.FN)==0 | !file.access(SEQ.GENO.FN)==0) {
   ## genotype data has not yet been processed
   source('plink_genotype_preprocessing.R')
@@ -47,24 +49,32 @@ if(!file.access(PHENO.FN)==0) {
 Here we define two models: a simple regression of SNP on phenotype, and a full model including available covariates. Both sample sex and site of ascertainment are natural categorical covariates. The encoding of the dosing regimen deserves some careful consideration. This can be treated as a continuous covariate, a categorical covariate, or perhaps some different altogether. Currently, I am treating it as a continuous variable. I am able to include it in fitting the SKAT-O model as an added benefit. We simply do not have the degrees of freedom necessary (i.e. number of samples) to include 33 dummy variables.
 
 ```{r model_spec}
-trans.fun <- log
+trans.fun <- my.invnorm
 basic.model <- trans.fun(ANC) ~ 1
 full.model <- trans.fun(ANC) ~ sex + site + as.numeric(dose)
+pca.model <- trans.fun(ANC) ~ sex + site + as.numeric(dose) + eigenvect.1 + eigenvect.2 + eigenvect.3 + eigenvect.4 + eigenvect.5
 ```
 
 ## PGRNseq GWAS
 ### Simple Regression
 ```{r seq_simple_regression}
-seq.reg.results <- mlreg(basic.model, seq.geno, trait="gaussian")
-qqunif(seq.reg.results[,"P1df"])
+seq.simplereg.results <- mlreg(basic.model, seq.geno, trait="gaussian")
+qqunif(seq.simplereg.results[,"P1df"])
 title('PGRNseq Simple Linear Regression GWAS')
 ```
 
 ### Multiple Regression
 ```{r seq_multiple_regression}
-seq.reg.results <- mlreg(full.model, seq.geno, trait="gaussian")
-qqunif(seq.reg.results[,"P1df"])
+seq.multiplereg.results <- mlreg(full.model, seq.geno, trait="gaussian")
+qqunif(seq.multiplereg.results[,"P1df"])
 title('PGRNseq Multiple Linear Regression GWAS')
+```
+
+### All Samples with PCA Adjustment
+ ```{r seq_allsamplepca_regression}
+seq.pcareg.results <- mlreg(pca.model, seq.geno, trait="gaussian")
+qqunif(seq.pcareg.results[,"P1df"])
+title('PGRNseq All Samples with Covariates and top 5 PCs')
 ```
 
 ## Exome chip GWAS
@@ -78,7 +88,7 @@ title('Exome chip Simple Linear Regression GWAS')
 ### Multiple Regression
 ```{r exome_multiple_regression}
 exome.reg.results <- mlreg(full.model, exome.geno, trait="gaussian")
-qqunif(seq.reg.results[,"P1df"])
+qqunif(exome.reg.results[,"P1df"])
 title('Exome Chip Multiple Linear Regression')
 ```
 
@@ -89,7 +99,7 @@ hg19 chr2:234,665,782 G/A
   A: 27%  
   G: 73%  
 ```{r known_signal, results='asis'}
-rs10929302.res <- results(seq.reg.results)['chr2:234665782:G:A',]
-kable( rs10929302.res[,c('A1', 'A2','N', 'effB', 'se_effB', 'P1df')] )
+rs10929302.res <- results(seq.pcareg.results)['chr2:234665782:G:A', c('A1', 'A2','N', 'effB', 'se_effB', 'P1df')]
+kable( rs10929302.res )
 ```
 
