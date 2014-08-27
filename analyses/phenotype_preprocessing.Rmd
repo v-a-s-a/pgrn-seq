@@ -78,30 +78,36 @@ pheno.df <- data.frame(id=nomiss.pheno$SM_ID,
 
 ## Data ##
 ### Sample size: ###
-`nrow(pheno.df)` samples in the phenotype file. `sum(!is.na(pheno.df$ANC))` samples that have a non-missing, non-zero Neutrophil count phenotype
+`nrow(pheno.df)` samples in the phenotype file. `sum(!is.na(pheno.df$ANC))` samples that have a non-missing, non-zero Neutrophil count phenotype.
 
 ### Phenotypes: ###
-Neutrophil Count Nadir (1000 cells/mcL)
-log Neutrophil Count Nadir
-Inverse normalized Neutrophil Count Nadir.
+Neutrophil Count Nadir (1000 cells/mcL)  
+log Neutrophil Count Nadir  
+Inverse normalized Neutrophil Count Nadir.  
 
 ### Covariates: ###
-Sex :: factor
-Site of ascertainment :: factor
-Dosage regimen :: continuous
+Sex :: factor  
+Site of ascertainment :: factor  
+Dosage regimen :: continuous  
 
-## Expirical Distributions of Phenotypes
-```{r anc_plot}
+## observed Distributions of Phenotypes
+```{r anc_plot,
+      echo=FALSE,
+      fig.cap="Distribution of the Adjusted Neutrophil Count (ANC)."}
 anc.plt <- ggplot(pheno.df, aes(x=ANC)) + geom_histogram()
 print(anc.plt + ggtitle('ANC'))
 ```
 
-```{r loganc_plt}
+```{r loganc_plt,
+      echo=FALSE,
+      fig.cap="Distribution of the log transformation of the the Adjusted Neutrophil Count (ANC)."}
 loganc.plt <- ggplot(pheno.df, aes(x=log(ANC))) + geom_histogram()
 print(loganc.plt + ggtitle('log(ANC)'))
 ```
 
-```{r normanc_plt}
+```{r normanc_plt,
+      echo=FALSE,
+      fig.cap="Distribution of the inverse normalized Adjusted Neutrophil Count (ANC). Inverse normalization consists of ranking the samples by their phenotype, and mapping those ranks to values in [0, 1]. These values are then fed through the standard normal quantile function, and the result is a normal distribution with samples mainting their relative order based on their original phenotype. The downside is that any subsequent regression loses biological interpretability."}
 loganc.plt <- ggplot(pheno.df, aes(x=my.invnorm(ANC))) + geom_histogram()
 print(loganc.plt + ggtitle('Inverse Normalized ANC'))
 ```
@@ -116,12 +122,10 @@ snpgdsBED2GDS(bed.fn=paste0(exome.fbase, '.bed'),
               out.gdsfn=paste0(exome.fbase, '.gds'))
 exome.geno <- openfn.gds(filename=paste0(exome.fbase, '.gds'))
 ```
+
 ## Exome chip:
-
-
-
-## PCA
-Prune SNP set for LD, filter on MAF, and run PCA.
+### PCA
+Prune SNP set for LD, filter on MAF, and run PCA. Pay attention to the LD, and MAF thresholds in the console output below.
 ```{r pca}
 ld.snpset <- snpgdsLDpruning(exome.geno)
 pca <- snpgdsPCA(exome.geno, snp.id = unlist(ld.snpset), maf = 0.05)
@@ -140,10 +144,13 @@ print(reported.plt + ggtitle('PCA w/ self reported ancestry'))
 Add principal components to the phenotype data frame, then cluster samples in the first two PCs.
 ```{r cluster}
 names(pheno.df)[which(names(pheno.df) == "sample.id")] <- "id"
-cluster3 <- Mclust(pheno.df[,c("eigenvect.1", "eigenvect.2")], G=3) # specify 3 mixture components
-clustern <- Mclust(pheno.df[,c("eigenvect.1", "eigenvect.2")]) # select # of components using BIC
+## specify 3 mixture components
+cluster3 <- Mclust(pheno.df[,c("eigenvect.1", "eigenvect.2")], G=3)
+## select # of components using BIC
+clustern <- Mclust(pheno.df[,c("eigenvect.1", "eigenvect.2")])
 pheno.df$cluster <- clustern$classification
-euroclust <- which(table(pheno.df$cluster) == max(table(pheno.df$cluster))) # euro clust is largest
+## euro clust is largest
+euroclust <- which(table(pheno.df$cluster) == max(table(pheno.df$cluster))) 
 pheno.df$iseuro <- pheno.df$cluster == euroclust 
 ```
 
