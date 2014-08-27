@@ -5,6 +5,7 @@
 .libPaths('~/R/x86_64-pc-linux-gnu-library/3.0/')
 library(GenABEL)
 library(ggplot2)
+library(xtable)
 ```
 
 ```{r define_constants, include=FALSE}
@@ -46,7 +47,7 @@ if(!file.access(PHENO.FN)==0) {
 ```
 
 ## Model specification
-Here we define two models: a simple regression of SNP on phenotype, and a full model including available covariates. Both sample sex and site of ascertainment are natural categorical covariates. The encoding of the dosing regimen deserves some careful consideration. This can be treated as a continuous covariate, a categorical covariate, or perhaps some different altogether. Currently, I am treating it as a continuous variable. I am able to include it in fitting the SKAT-O model as an added benefit. We simply do not have the degrees of freedom necessary (i.e. number of samples) to include 33 dummy variables.
+Here we define two models: a simple regression of SNP on phenotype, and a full model including available covariates. Both sample sex and site of ascertainment are natural categorical covariates. The encoding of the dosing regimen can be treated as a continuous covariate, a categorical covariate, or perhaps some different altogether. Currently, I am treating it as a continuous variable in order for this to be considered
 
 ```{r model_spec}
 trans.fun <- my.invnorm
@@ -100,6 +101,6 @@ hg19 chr2:234,665,782 G/A
   G: 73%  
 ```{r known_signal, results='asis'}
 rs10929302.res <- results(seq.pcareg.results)['chr2:234665782:G:A', c('A1', 'A2','N', 'effB', 'se_effB', 'P1df')]
-kable( rs10929302.res )
+print(xtable(rs10929302.res, digits=6), include.rownames=FALSE)
 ```
 
