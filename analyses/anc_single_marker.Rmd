@@ -1,0 +1,100 @@
+# Adjusted Neutrophil Count (ANC) single marker association in PGRNseq data
+Here we run a set of single marker tests on the raw phenotype. You can see its distribution in the phenotype processing report. We look at three models: simple regression on genotype on phenotype in european samples only; multiple regression of genotype + covariates in european samples only; and multiple regression of genotype on phenotype + covariates + pricipal components in ALL available samples.
+
+In addition to summarizing the scan in a QQ plot, we happened to have captured a previously associated variant. I report the estimated effect and p-value of the variant for each model.
+
+```{r load_packages, include=FALSE}
+## Downgrading to R 3.0.2 version of R to maintain package compatibility
+.libPaths('~/R/x86_64-pc-linux-gnu-library/3.0/')
+library(GenABEL)
+library(ggplot2)
+library(xtable)
+```
+
+```{r load_constants, include=FALSE}
+source('shared_variables.R')
+## we just want a plain phenotype here -- no transformation
+trans.fun <- identity
+```
+
+```{r define_functions, include=FALSE}
+source('../scripts/qqunif.r')
+
+## http://haky-functions.blogspot.com/
+my.invnorm = function(x)
+{
+ res = rank(x)
+ res = qnorm(res/(length(res)+0.5))
+ return(res)
+}
+
+```
+
+# Known association signal
+The following was pulled from the 1000 Genomes browser.
+UGT1A1*93: rs10929302  
+hg19 chr2:234,665,782 G/A  
+1000 Genomes allele frequencies:  
+  A: 27%  
+  G: 73%  
+
+The known association was referenced in PharmGKB.
+
+```{r load_data, include=FALSE}
+if(!file.access(EURO.SEQ.GENO.FN)==0 | !file.access(FULL.SEQ.GENO.FN)==0) {
+  ## genotype data has not yet been processed
+  source('plink_genotype_preprocessing.R')
+} else {
+  ## load processed genotype data
+  load(EURO.SEQ.GENO.FN)
+  load(FULL.SEQ.GENO.FN)
+}
+
+if(!file.access(PHENO.FN)==0) {
+  source(purl('phenotype_preprocessing.R'))
+} else {
+  load(PHENO.FN)
+}
+```
+
+## Genetic europeans
+These samples were selected based on clustering analysis performed on the top two PCs of the exome chip data. This is a subset consisting of `dim(euro.seq.geno@phdata)[1]` samples. The subsetting is performed to remove any confouding of genetric ancestry, but ultimately may be too conservative for our sample size.
+
+### Simple regression
+Regress phenotype on genotype.
+```{r seq_simple_regression}
+seq.simplereg.results <- mlreg(basic.model, euro.seq.geno, trait="gaussian")
+qqunif(seq.simplereg.results[,"P1df"])
+title('PGRNseq simple linear regression GWAS on Europeans only')
+```
+Look at the association results of the previously observed signal:
+```{r simple_known_sig, results='asis'}
+rs10929302.res <- results(seq.simplereg.results)['chr2:234665782:G:A', c('A1', 'A2','N', 'effB', 'se_effB', 'P1df')]
+print(xtable(rs10929302.res, digits=6), include.rownames=FALSE)
+```
+
+### Multiple regression
+Regress phenotype on genotype and other sample covariates.
+```{r seq_multiple_regression}
+seq.multiplereg.results <- mlreg(full.model, euro.seq.geno, trait="gaussian")
+qqunif(seq.multiplereg.results[,"P1df"])
+title('PGRNseq multiple linear regression GWAS on Europeans only')
+```
+Look at the association results of the previously observed signal:
+```{r multiple_known_sig, results='asis'}
+rs10929302.res <- results(seq.multiplereg.results)['chr2:234665782:G:A', c('A1', 'A2','N', 'effB', 'se_effB', 'P1df')]
+print(xtable(rs10929302.res, digits=6), include.rownames=FALSE)
+```
+
+## Full Data with PC adjustment
+Regress phenotype on genotype, sample covariates, and top five PCs using _all_ samples.
+```{r seq_allsamplepca_regression}
+seq.pcareg.results <- mlreg(pca.model, full.seq.geno, trait="gaussian")
+qqunif(seq.pcareg.results[,"P1df"])
+title('PGRNseq All Samples with Covariates and top 5 PCs')
+```
+Look at the association results of the previously observed signal:
+```{r pca_known_sig, results='asis'}
+rs10929302.res <- results(seq.pcareg.results)['chr2:234665782:G:A', c('A1', 'A2','N', 'effB', 'se_effB', 'P1df')]
+print(xtable(rs10929302.res, digits=6), include.rownames=FALSE)
+```
