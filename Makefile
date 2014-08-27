@@ -11,9 +11,15 @@ reports/phenotype_preprocessing.pdf: analyses/phenotype_preprocessing.Rmd
 	cd analyses/; R ${R_OPTS} -e 'library(knitr);knit("phenotype_preprocessing.Rmd")'
 	cd analyses/; pandoc phenotype_preprocessing.md -o ../reports/phenotype_preprocessing.pdf 
 
-reports/single_marker_analysis.pdf: analyses/single_marker_analysis.Rmd
-	cd analyses/; R ${R_OPTS} -e 'library(knitr);knit("single_marker_analysis.Rmd")'
-	cd analyses/; pandoc single_marker_analysis.md -o ../reports/single_marker_analysis.pdf 
+
+reports/anc_single_marker.pdf: analyses/anc_single_marker.Rmd
+	cd analyses/; R ${R_OPTS} -e 'library(knitr);knit("anc_single_marker.Rmd")'
+	cd analyses/; pandoc anc_single_marker.md -o ../reports/anc_single_marker.pdf 
+
+## I refactored the single marker analysis into separate reports for each phenotype transform
+#reports/single_marker_analysis.pdf: analyses/single_marker_analysis.Rmd
+#	cd analyses/; R ${R_OPTS} -e 'library(knitr);knit("single_marker_analysis.Rmd")'
+#	cd analyses/; pandoc single_marker_analysis.md -o ../reports/single_marker_analysis.pdf 
 
 reports/gene_based_analysis.pdf: analyses/gene_based_analysis.Rmd
 	cd analyses/;  R ${R_OPTS} -e 'library(knitr);knit("gene_based_analysis.Rmd")'
@@ -21,4 +27,4 @@ reports/gene_based_analysis.pdf: analyses/gene_based_analysis.Rmd
 
 clean:
 	cd lab_notebook; rm analysis-description.md
-	cd analyses/; rm phenotype_preprocessing.md single_marker_analysis.md gene_based_analysis.md
+	cd analyses/; rm phenotype_preprocessing.md anc_single_marker.md gene_based_analysis.md
