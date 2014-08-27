@@ -11,9 +11,8 @@ library(knitr)
 ##############################################################################
 ## CONSTANTS #################################################################
 ##############################################################################
-PHENO.FN <- '../data/rdata/pheno.Rdata'
-EXOME.GENO.FN <- '../data/rdata/exome.geno.Rdata'
-SEQ.GENO.FN <- '../data/rdata/seq.geno.Rdata'
+source('shared_variables.R')
+
 
 ##############################################################################
 ## FUNCTIONS #################################################################
@@ -73,20 +72,30 @@ genabel.pheno <- "../data/annotation/genable.pheno"
 write.table(pheno.df, file=genabel.pheno, row.names=F)
 ## Seqeunce data
 consensus <- load.gwaa.data(phenofile = genabel.pheno, genofile = genabel.geno)
-seq.snpsubset <- check.marker(data = consensus,
+full.seq.snpsubset <- check.marker(data = consensus,
                   maf = 0.05,
                   callrate = 0.95)
-#                  idsubset = as.character(pheno.df$id[which(pheno.df$iseuro == TRUE)]))
-seq.geno <- consensus[seq.snpsubset$idok, seq.snpsubset$snpok]
+full.seq.geno <- consensus[full.seq.snpsubset$idok, full.seq.snpsubset$snpok]
+euro.seq.snpsubset <- check.marker(data = consensus,
+                  maf = 0.05,
+                  callrate = 0.95,
+                  idsubset = as.character(pheno.df$id[which(pheno.df$iseuro == TRUE)]))
+euro.seq.geno <- consensus[euro.seq.snpsubset$idok, euro.seq.snpsubset$snpok]
 ## Exome data
 exome <- load.gwaa.data(phenofile = genabel.pheno, genofile = exome.geno)
-exome.snpsubset <- check.marker(data = exome,
+euro.exome.snpsubset <- check.marker(data = exome,
                     maf = 0.05,
                     callrate = 0.95,
                     idsubset = as.character(pheno.df$id[which(pheno.df$iseuro == TRUE)]))
-exome.geno <- exome[exome.snpsubset$idok, exome.snpsubset$snpok]
+euro.exome.geno <- exome[euro.exome.snpsubset$idok, euro.exome.snpsubset$snpok]
+full.exome.snpsubset <- check.marker(data = exome,
+                    maf = 0.05,
+                    callrate = 0.95)
+full.exome.geno <- exome[full.exome.snpsubset$idok, full.exome.snpsubset$snpok]
 
 ## dump data to disk
-save(exome.geno, file=EXOME.GENO.FN)
-save(seq.geno, file=EXOME.GENO.FN)
+save(euro.exome.geno, file=EURO.EXOME.GENO.FN)
+save(full.seq.geno, file=FULL.EXOME.GENO.FN)
+save(euro.seq.geno, file=EURO.SEQ.GENO.FN)
+save(full.seq.geno, file=FULL.SEQ.GENO.FN)
 
