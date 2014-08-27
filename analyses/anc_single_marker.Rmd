@@ -58,7 +58,7 @@ if(!file.access(PHENO.FN)==0) {
 ```
 
 ## Genetic europeans
-These samples were selected based on clustering analysis performed on the top two PCs of the exome chip data. This is a subset consisting of `dim(euro.seq.geno@phdata)[1]` samples. The subsetting is performed to remove any confouding of genetric ancestry, but ultimately may be too conservative for our sample size.
+These samples were selected based on clustering analysis performed on the top two PCs of the exome chip data. This is a subset consisting of `r dim(euro.seq.geno@phdata)[1]` samples. The subsetting is performed to remove any confouding of genetric ancestry, but ultimately may be too conservative for our sample size.
 
 ### Simple regression
 Regress phenotype on genotype.
