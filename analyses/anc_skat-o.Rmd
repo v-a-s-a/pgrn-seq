@@ -144,6 +144,7 @@ eur.pheno <- pheno.df[which(pheno.df$iseuro == TRUE),]
 vcfFile <- '../data/consensus_seq_variants/consensus.geno.vcf.gz'
 annot <- annotate.genotypes(vcfFile)
 sparseX <- load.snp.mat(vcfFile, eur.pheno)
+all.sparseX <- load.snp.mat(vcfFile, pheno.df)
 genes <- unique(annot$GENEID[which(!is.na(annot$GENEID))])
 ```
 
@@ -155,27 +156,72 @@ We subset our genotypes to european samples. We end up with `r nrows(eur.pheno)`
 ```{r seq_skat_o, echo=FALSE}
 basic.res <- parallel.skat.scan(genes = genes,
               pheno = eur.pheno,
-              model = basic.model,
+              model = "trans.fun(ANC) ~ 1",
               snpMat = sparseX,
               annot = annot,
               n.core = 8)
 ```
 
 The resulting QQ plot:
-```{r qqplot, echo=FALSE}
+```{r qqplot,
+      echo=FALSE,
+      caption="QQ plot for model: ANC ~ 1. Here we use only european samples."}
 qqunif(basic.res$p)
 ```
 
-And subsequent top hits:
+And the top hits:
 ```{r top_hits, results='asis'}
-top.hits <- clean.res[order(clean.res$p),]
-dim(clean.res)
+top.hits <- basic.res[order(basic.res$p),]
 print(xtable(head(top.hits), digits=6))
 ```
 
 ### Full model: ANC with genotype adjusted for covariates in europeans only
 Again we subset our genotypes to european samples. The following analysis contains `r nrow(eur.pheno)` samples.
+```{r full_skat_o,
+      echo=FALSE}
+full.res <- parallel.skat.scan(genes = genes,
+              pheno = eur.pheno,
+              model = "trans.fun(ANC) ~ sex + site + as.numeric(dose)",
+              snpMat = sparseX,
+              annot = annot,
+              n.core = 8)
+```
+
+The resulting QQ plot:
+```{r full_qqplot,
+      echo=FALSE,
+      caption="QQplot for model: ANC ~ sex + site + dose. Here we use only european samples."}
+qqunif(full.res$p)
+```
+
+And the top hits:
+```{r full_top_hits, results='asis'}
+top.hits <- full.res[order(full.res$p),]
+print(xtable(head(top.hits), digits=6))
+```
+
 
 ### PCA model: ANC with genotype adjusted for covariates and PCs in _all_ samples.
-We no longer subset samples by genetic ancestry. Instead, we include all samples and adjust for ancestry by including top PCs as continuous covariates.
+We no longer subset samples by genetic ancestry. Instead, we include all samples and adjust for ancestry by including top PCs as continuous covariates. The following analysis contains `r nrow(pheno.df)` samples.
+```{r pca_skat_o,
+      echo=FALS}
+pca.res <- parallel.skat.scan(genes = genes,
+              pheno = pheno.df,
+              model = "trans.fun(ANC) ~ sex + site + as.numeric(dose) + eigenvect.1 + eigenvect.2 + eigenvect.3 + eigenvect.4 + eigenvect.5",
+              snpMat = all.sparseX,
+              annot = annot,
+              n.core = 8)
+```
 
+The resulting QQ plot:
+```{r pca_qqplot,
+      echo=FALSE,
+      caption="QQplot for model: ANC ~ sex + site + dose + PC1 + ... + PC5. Here we use all samples with non-missing phenotypes."}
+qqunif(pca.res$p)
+```
+
+And the top hits:
+```{r pca_top_hits, results='asis'}
+top.hits <- pca.res[order(pca.res$p),]
+print(xtable(head(top.hits), digits=6))
+```
