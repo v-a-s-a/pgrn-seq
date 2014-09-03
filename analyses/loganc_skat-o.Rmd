@@ -1,0 +1,218 @@
+# Log Transformed Adjusted Neutrophil Count (ANC) SKAT-O gene-based association analysis
+```{r packages, include=FALSE}
+.libPaths('~/R/x86_64-pc-linux-gnu-library/3.0/')
+library(VariantAnnotation, quietly = T)
+library(SNPRelate, quietly = T)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene, quietly = T)
+library(org.Hs.eg.db, quietly = T)
+library(SKAT, quietly = T)
+library(doMC, quietly = T)
+library(foreach, quietly = T)
+library(knitr)
+library(xtable)
+```
+
+```{r constants, include=FALSE}
+source('shared_variables.R')
+trans.fun <- log
+```
+
+```{r fuctions, include=FALSE}
+## function making a qq plot with FDR overlaid
+source('../scripts/qqunif.r')
+
+## http://haky-functions.blogspot.com/
+my.invnorm = function(x)
+{
+ res = rank(x)
+ res = qnorm(res/(length(res)+0.5))
+ return(res)
+}
+
+## Convert to a sparse matrix by reporting the dosage of the minor allele.
+## The snpMatrix class defaults to reporting dosage of the alternate allele.
+flip.allele <- function(x) {
+  if (all(is.na(x))) {
+    return(x)
+  } else if (mean(x, na.rm=TRUE) > 1) {
+  ## alleles need to be flipped
+  x[x == 0] <- 3
+  x[x == 2] <- 0
+  x[x == 3] <- 2
+  }
+  return(x)
+}
+
+
+## calculate some permutation based p-values for top hits
+## should also try generating one large null distribution, and testing genes against that
+permute.p <- function(pheno.df, X, n, Q) {
+  null.q <- rep(0, n)
+  #null.skat <- SKAT_Null_Model(ANC ~ sex + site + dose, out_type="C", Adjustment=F)
+  null.skat <- SKAT_Null_Model(ANC ~ 1, out_type="C", Adjustment=F)
+  for(i in 1:n) {
+    print(i)
+    ## shuffle phenotype and covariate values
+    idx <- sample(1:nrow(pheno.df))
+    ## fit null model
+    skat <- SKAT(X[idx,], null.skat)
+    null.q[i] <- skat$Q
+  }
+  return( 1 - (length(which(Q > null.q)) / n) )
+}
+
+
+## annotate a snp matrix
+annotate.genotypes <- function(vcfFile) {
+  ## load in genotype data
+  vcf <- readVcf(vcfFile, 'hg19')
+  vcfRows <- rowData(vcf)
+  ## annotate variants with Entrez gene IDs
+  #loc <- locateVariants(vcfRows, TxDb.Hsapiens.UCSC.hg19.knownGene, AllVariants())
+  loc <- locateVariants(vcfRows, TxDb.Hsapiens.UCSC.hg19.knownGene, AllVariants())
+  names(loc) <- NULL
+  annot <- as.data.frame(loc)
+  annot$names <- names(vcfRows)[ annot$QUERYID ]
+  return(annot[, c("names", "seqnames", "start", "end", "LOCATION", "GENEID")])
+}
+
+## make a sparse genotype matrix from a vcf file
+load.snp.mat <- function(vcf, pheno) {
+  ## pull the genotype matrix
+  vcf <- readVcf(vcfFile, 'hg19')
+  vcfRows <- rowData(vcf)
+  XsnpMat <- genotypeToSnpMatrix(vcf)
+  Xraw <- as(object=XsnpMat$genotypes, Class="numeric")
+  ## match phenotype and genotype matrices
+  X <- Xraw[as.character(pheno$id),]
+  sparseX <- apply(X, 2, flip.allele)
+  return(sparseX)
+}
+
+
+## parallel SKAT scan
+parallel.skat.scan <- function(genes, pheno, model, snpMat, annot, n.core = 1) {
+  ## compute the SKAT null model
+  null.model <- with(eur.pheno, SKAT_Null_Model(as.formula(model), out_type="C", Adjustment=TRUE))
+  registerDoMC(cores=n.core)
+  res <- foreach(i = 1:length(genes), .combine = rbind) %dopar% {
+    gene <- genes[i]
+    gene.snps <- annot$names[which(annot$GENEID == gene)]
+    Xgene <- sparseX[,gene.snps]
+    ## record mean MAF
+    try({skat <- SKAT(Xgene, null.model, method = "optimal.adj")
+          ## find \rho that minimizes the p-value
+          best.fit <- which(skat$param$p.val.each == skat$param$minp)
+          data.frame(gene = gene,
+                  p = skat$p.value,
+                  param.p = skat$param$p[best.fit],
+                  rho = skat$param$rho[best.fit],
+                  nsnps = skat$param$n.marker.test)
+      })
+  }
+  ## drop failed tests 
+  res$p <- as.numeric(res$p)
+  res$param.p <- as.numeric(res$param.p)
+  res$rho <- as.numeric(res$rho)
+  res$nsnps <- as.numeric(res$nsnps)
+  clean.res <- res[which(!is.na(res$p)),]
+
+  ## add gene symbols for interpretation
+  Symbol2id <- as.list( org.Hs.egSYMBOL2EG )
+  id2Symbol <- rep( names(Symbol2id), sapply(Symbol2id, length) )
+  names(id2Symbol) <- unlist(Symbol2id)
+  clean.res$symbol <- id2Symbol[ as.character(clean.res$gene) ]
+
+  return(clean.res)
+}
+```
+
+```{r load_pheno, include=FALSE}
+## load phenotype data
+if(!file.access(PHENO.FN)==0) {
+  ## phenotype data has not yet been generated -- do that now
+  source(purl('phenotype_preprocessing.Rmd'))
+} else {
+  ## load already processed phenotype file
+  load(PHENO.FN)
+}
+## subset to european-like individuals
+eur.pheno <- pheno.df[which(pheno.df$iseuro == TRUE),]
+```
+
+```{r load_variants, include=FALSE}
+vcfFile <- '../data/consensus_seq_variants/consensus.geno.vcf.gz'
+annot <- annotate.genotypes(vcfFile)
+sparseX <- load.snp.mat(vcfFile, eur.pheno)
+all.sparseX <- load.snp.mat(vcfFile, pheno.df)
+genes <- unique(annot$GENEID[which(!is.na(annot$GENEID))])
+```
+
+## SKAT-O ANC Scan
+After loading and annotating our VCF file of consensus variants, we have `r length(genes)` unique genes.
+
+### Basic model: ANC with genotype in europeans only
+We subset our genotypes to european samples. We end up with `r nrow(eur.pheno)` samples in the following analysis.
+```{r seq_skat_o, include=FALSE}
+basic.res <- parallel.skat.scan(genes = genes,
+              pheno = eur.pheno,
+              model = "trans.fun(ANC) ~ 1",
+              snpMat = sparseX,
+              annot = annot,
+              n.core = 8)
+```
+
+The resulting QQ plot:
+```{r qqplot, include=FALSE, caption="QQ plot for model: log(ANC) ~ 1. Here we use only european samples."}
+qqunif(basic.res$p)
+```
+
+And the top hits:
+```{r top_hits, results='asis'}
+top.hits <- basic.res[order(basic.res$p),]
+print(xtable(head(top.hits), digits=6))
+```
+
+### Full model: ANC with genotype adjusted for covariates in europeans only
+Again we subset our genotypes to european samples. The following analysis contains `r nrow(eur.pheno)` samples.
+```{r full_skat_o, include=FALSE}
+full.res <- parallel.skat.scan(genes = genes,
+              pheno = eur.pheno,
+              model = "trans.fun(ANC) ~ sex + site + as.numeric(dose)",
+              snpMat = sparseX,
+              annot = annot,
+              n.core = 8)
+```
+
+The resulting QQ plot:
+```{r full_qqplot, echo=FALSE, caption="QQplot for model: log(ANC) ~ sex + site + dose. Here we use only european samples."}
+qqunif(full.res$p)
+```
+
+And the top hits:
+```{r full_top_hits, results='asis'}
+top.hits <- full.res[order(full.res$p),]
+print(xtable(head(top.hits), digits=6))
+```
+
+### PCA model: ANC with genotype adjusted for covariates and PCs in _all_ samples.
+We no longer subset samples by genetic ancestry. Instead, we include all samples and adjust for ancestry by including top PCs as continuous covariates. The following analysis contains `r nrow(pheno.df)` samples.
+```{r pca_skat_o, include=FALSE}
+pca.res <- parallel.skat.scan(genes = genes,
+              pheno = pheno.df,
+              model = "trans.fun(ANC) ~ sex + site + as.numeric(dose) + eigenvect.1 + eigenvect.2 + eigenvect.3 + eigenvect.4 + eigenvect.5",
+              snpMat = all.sparseX,
+              annot = annot,
+              n.core = 8)
+```
+
+The resulting QQ plot:
+```{r pca_qqplot, echo=FALSE, caption="QQplot for model: log(ANC) ~ sex + site + dose + PC1 + ... + PC5. Here we use all samples with non-missing phenotypes."}
+qqunif(pca.res$p)
+```
+
+And the top hits:
+```{r pca_top_hits, results='asis'}
+top.hits <- pca.res[order(pca.res$p),]
+print(xtable(head(top.hits), digits=6))
+```
