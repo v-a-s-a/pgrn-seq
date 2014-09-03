@@ -28,9 +28,22 @@ reports/invnormanc_single_marker.pdf: analyses/invnormanc_single_marker.Rmd
 #	cd analyses/; R ${R_OPTS} -e 'library(knitr);knit("single_marker_analysis.Rmd")'
 #	cd analyses/; pandoc single_marker_analysis.md -o ../reports/single_marker_analysis.pdf 
 
-reports/gene_based_analysis.pdf: analyses/gene_based_analysis.Rmd
-	cd analyses/;  R ${R_OPTS} -e 'library(knitr);knit("gene_based_analysis.Rmd")'
-	cd analyses/; pandoc gene_based_analysis.md -o ../reports/gene_based_analysis.pdf
+reports/anc_skat-o.pdf: analyses/anc_skat-o.Rmd
+	cd analyses/;  R ${R_OPTS} -e 'library(knitr);knit("anc_skat-o.Rmd")'
+	cd analyses/; pandoc anc_skat-o.md -o ../reports/anc_skat-o.pdf
+
+reports/loganc_skat-o.pdf: analyses/loganc_skat-o.Rmd
+	cd analyses/;  R ${R_OPTS} -e 'library(knitr);knit("loganc_skat-o.Rmd")'
+	cd analyses/; pandoc loganc_skat-o.md -o ../reports/loganc_skat-o.pdf
+
+reports/invnormanc_skat-o.pdf: analyses/invnormanc_skat-o.Rmd
+	cd analyses/;  R ${R_OPTS} -e 'library(knitr);knit("invnormanc_skat-o.Rmd")'
+	cd analyses/; pandoc invnormanc_skat-o.md -o ../reports/invnormanc_skat-o.pdf
+
+## refactored gene-based analysis into separate reports
+#reports/gene_based_analysis.pdf: analyses/gene_based_analysis.Rmd
+#	cd analyses/;  R ${R_OPTS} -e 'library(knitr);knit("gene_based_analysis.Rmd")'
+#	cd analyses/; pandoc gene_based_analysis.md -o ../reports/gene_based_analysis.pdf
 
 clean:
 	cd lab_notebook; rm analysis-description.md
