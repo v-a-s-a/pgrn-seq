@@ -67,6 +67,11 @@ seq.simplereg.results <- mlreg(basic.model, euro.seq.geno, trait="gaussian")
 qqunif(seq.simplereg.results[,"P1df"])
 title('PGRNseq simple linear regression GWAS on Europeans only')
 ```
+Take a look at the top hits:
+```{r simple_top, results='asis'}
+top.hits <- seq.simplereg.results[order(seq.simplereg.results[,'P1df'], decreasing=F),]
+print(xtable(head(top.hits[ c("N", "effB", "se_effB", "chi2.1df", "P1df") ]), digits=6), include.rownames=T)
+```
 Look at the association results of the previously observed signal:
 ```{r simple_known_sig, results='asis'}
 rs10929302.res <- results(seq.simplereg.results)['chr2:234665782:G:A', c('A1', 'A2','N', 'effB', 'se_effB', 'P1df')]
@@ -80,6 +85,11 @@ seq.multiplereg.results <- mlreg(full.model, euro.seq.geno, trait="gaussian")
 qqunif(seq.multiplereg.results[,"P1df"])
 title('PGRNseq multiple linear regression GWAS on Europeans only')
 ```
+Take a look at top hits:
+```{r multiple_top, results='asis'}
+top.hits <- seq.multiplereg.results[order(seq.multiplereg.results[,'P1df'], decreasing=F),]
+print(xtable(head(top.hits[ c("N", "effB", "se_effB", "chi2.1df", "P1df") ]), digits=6), include.rownames=T)
+```
 Look at the association results of the previously observed signal:
 ```{r multiple_known_sig, results='asis'}
 rs10929302.res <- results(seq.multiplereg.results)['chr2:234665782:G:A', c('A1', 'A2','N', 'effB', 'se_effB', 'P1df')]
@@ -92,6 +102,11 @@ Regress phenotype on genotype, sample covariates, and top five PCs using _all_ s
 seq.pcareg.results <- mlreg(pca.model, full.seq.geno, trait="gaussian")
 qqunif(seq.pcareg.results[,"P1df"])
 title('PGRNseq All Samples with Covariates and top 5 PCs')
+```
+Take a look at top hits:
+```{r pca_top, results='asis'}
+top.hits <- seq.pcareg.results[order(seq.pcareg.results[,'P1df'], decreasing=F),]
+print(xtable(head(top.hits[ c("N", "effB", "se_effB", "chi2.1df", "P1df") ]), digits=6), include.rownames=T)
 ```
 Look at the association results of the previously observed signal:
 ```{r pca_known_sig, results='asis'}
