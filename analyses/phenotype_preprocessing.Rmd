@@ -91,23 +91,17 @@ Site of ascertainment :: factor
 Dosage regimen :: continuous  
 
 ## observed Distributions of Phenotypes
-```{r anc_plot,
-      echo=FALSE,
-      fig.cap="Distribution of the Adjusted Neutrophil Count (ANC)."}
+```{r anc_plot, echo=FALSE, fig.cap="Distribution of the Adjusted Neutrophil Count (ANC)."}
 anc.plt <- ggplot(pheno.df, aes(x=ANC)) + geom_histogram()
 print(anc.plt + ggtitle('ANC'))
 ```
 
-```{r loganc_plt,
-      echo=FALSE,
-      fig.cap="Distribution of the log transformation of the the Adjusted Neutrophil Count (ANC)."}
+```{r loganc_plt, echo=FALSE, fig.cap="Distribution of the log transformation of the the Adjusted Neutrophil Count (ANC)."}
 loganc.plt <- ggplot(pheno.df, aes(x=log(ANC))) + geom_histogram()
 print(loganc.plt + ggtitle('log(ANC)'))
 ```
 
-```{r normanc_plt,
-      echo=FALSE,
-      fig.cap="Distribution of the inverse normalized Adjusted Neutrophil Count (ANC). Inverse normalization consists of ranking the samples by their phenotype, and mapping those ranks to values in [0, 1]. These values are then fed through the standard normal quantile function, and the result is a normal distribution with samples mainting their relative order based on their original phenotype. The downside is that any subsequent regression loses biological interpretability."}
+```{r normanc_plt, echo=FALSE, fig.cap="Distribution of the inverse normalized Adjusted Neutrophil Count (ANC). Inverse normalization consists of ranking the samples by their phenotype, and mapping those ranks to values in [0, 1]. These values are then fed through the standard normal quantile function, and the result is a normal distribution with samples mainting their relative order based on their original phenotype. The downside is that any subsequent regression loses biological interpretability."}
 loganc.plt <- ggplot(pheno.df, aes(x=my.invnorm(ANC))) + geom_histogram()
 print(loganc.plt + ggtitle('Inverse Normalized ANC'))
 ```

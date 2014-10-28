@@ -163,7 +163,7 @@ basic.res <- parallel.skat.scan(genes = genes,
 ```
 
 The resulting QQ plot:
-```{r qqplot, include=FALSE, caption="QQ plot for model: inverseNorm(ANC) ~ 1. Here we use only european samples."}
+```{r invnorm_qqplot, include=FALSE, caption="QQ plot for model: inverseNorm(ANC) ~ 1. Here we use only european samples."}
 qqunif(basic.res$p)
 ```
 
@@ -172,6 +172,8 @@ And the top hits:
 top.hits <- basic.res[order(basic.res$p),]
 print(xtable(head(top.hits), digits=6))
 ```
+
+\pagebreak
 
 ### Full model: ANC with genotype adjusted for covariates in europeans only
 Again we subset our genotypes to european samples. The following analysis contains `r nrow(eur.pheno)` samples.
@@ -185,7 +187,7 @@ full.res <- parallel.skat.scan(genes = genes,
 ```
 
 The resulting QQ plot:
-```{r full_qqplot, echo=FALSE, caption="QQplot for model: inverseNorm(ANC) ~ sex + site + dose. Here we use only european samples."}
+```{r invnorm_full_qqplot, echo=FALSE, caption="QQplot for model: inverseNorm(ANC) ~ sex + site + dose. Here we use only european samples."}
 qqunif(full.res$p)
 ```
 
@@ -194,6 +196,8 @@ And the top hits:
 top.hits <- full.res[order(full.res$p),]
 print(xtable(head(top.hits), digits=6))
 ```
+
+\pagebreak
 
 ### PCA model: ANC with genotype adjusted for covariates and PCs in _all_ samples.
 We no longer subset samples by genetic ancestry. Instead, we include all samples and adjust for ancestry by including top PCs as continuous covariates. The following analysis contains `r nrow(pheno.df)` samples.
@@ -207,7 +211,7 @@ pca.res <- parallel.skat.scan(genes = genes,
 ```
 
 The resulting QQ plot:
-```{r pca_qqplot, echo=FALSE, caption="QQplot for model: inverseNorm(ANC) ~ sex + site + dose + PC1 + ... + PC5. Here we use all samples with non-missing phenotypes."}
+```{r invnorm_pca_qqplot, echo=FALSE, caption="QQplot for model: inverseNorm(ANC) ~ sex + site + dose + PC1 + ... + PC5. Here we use all samples with non-missing phenotypes."}
 qqunif(pca.res$p)
 ```
 

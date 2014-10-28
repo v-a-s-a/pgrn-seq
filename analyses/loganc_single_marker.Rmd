@@ -61,7 +61,7 @@ These samples were selected based on clustering analysis performed on the top tw
 
 ### Simple regression
 Regress phenotype on genotype.
-```{r seq_simple_regression}
+```{r loganc_simple_regression}
 seq.simplereg.results <- mlreg(basic.model, euro.seq.geno, trait="gaussian")
 qqunif(seq.simplereg.results[,"P1df"])
 title('PGRNseq simple linear regression GWAS on Europeans only')
@@ -79,7 +79,7 @@ print(xtable(rs10929302.res, digits=6), include.rownames=FALSE)
 
 ### Multiple regression
 Regress phenotype on genotype and other sample covariates.
-```{r seq_multiple_regression}
+```{r loganc_multiple_regression}
 seq.multiplereg.results <- mlreg(full.model, euro.seq.geno, trait="gaussian")
 qqunif(seq.multiplereg.results[,"P1df"])
 title('PGRNseq multiple linear regression GWAS on Europeans only')
@@ -97,7 +97,7 @@ print(xtable(rs10929302.res, digits=6), include.rownames=FALSE)
 
 ## Full Data with PC adjustment
 Regress phenotype on genotype, sample covariates, and top five PCs using _all_ samples.
-```{r seq_allsamplepca_regression}
+```{r loganc_allsamplepca_regression}
 seq.pcareg.results <- mlreg(pca.model, full.seq.geno, trait="gaussian")
 qqunif(seq.pcareg.results[,"P1df"])
 title('PGRNseq All Samples with Covariates and top 5 PCs')
